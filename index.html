@@ -1,0 +1,1841 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bahar Foods</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Bahar Foods — дневно меню с доставка до дома и офиса. Поръчайте онлайн или на 0896 687878.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;900&family=Pangolin&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column like the daily flyer. Logo and phone on top, the day's menu on a white tray edged with
+   the red gingham from Bahar's napkins, the basket docks at the bottom. The admin is the same column with four tabs. */
+:root{
+  --ground:#EFEEEC;      /* page, whitewashed planks */
+  --plate:#FFFFFF;       /* tray and panels */
+  --ink:#171514;         /* the flyer's black */
+  --ink-2:#615B57;       /* secondary text */
+  --line:#DDD8D3;
+  --brand:#8A2023;       /* "ПОРЪЧАЙ НА ТЕЛ." red, the one accent */
+  --brand-tint:#F6E7E6;
+  --on-brand:#FFFFFF;
+  --orange:#B86E16;      /* the hours line */
+  --check:rgba(214,40,64,.5); --check-ground:#FFFFFF;
+  --ok:#1F7446;  --ok-tint:#E2F2E8;
+  --warn:#9A5300; --warn-tint:#FCEFD8;
+  --bad:#B42318; --bad-tint:#FBE6E4;
+  --scrim:rgba(14,20,38,.5);
+  --lift:0 1px 0 rgba(22,32,58,.05), 0 10px 28px -16px rgba(22,32,58,.35);
+  --f-display:"Rubik","Arial Black","Segoe UI",sans-serif;
+  --f-body:"Rubik","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r-tray:24px; --r-ctl:12px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ground:#161312; --plate:#211C1B; --ink:#F1ECE8; --ink-2:#B5ABA5; --line:#3A3230;
+  --brand:#F2928A; --brand-tint:#3A1E1D; --on-brand:#1A0D0C; --orange:#F0B060;
+  --check:rgba(240,110,125,.45); --check-ground:#2B2120;
+  --ok:#62CB8E; --ok-tint:#123020; --warn:#F2B451; --warn-tint:#33250E; --bad:#FF8B7B; --bad-tint:#3A1614;
+  --scrim:rgba(0,0,0,.6); --lift:0 1px 0 rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.7);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#161312; --plate:#211C1B; --ink:#F1ECE8; --ink-2:#B5ABA5; --line:#3A3230;
+  --brand:#F2928A; --brand-tint:#3A1E1D; --on-brand:#1A0D0C; --orange:#F0B060;
+  --check:rgba(240,110,125,.45); --check-ground:#2B2120;
+  --ok:#62CB8E; --ok-tint:#123020; --warn:#F2B451; --warn-tint:#33250E; --bad:#FF8B7B; --bad-tint:#3A1614;
+  --scrim:rgba(0,0,0,.6); --lift:0 1px 0 rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+[hidden]{ display:none !important; }
+html{ -webkit-text-size-adjust:100%; }
+body{ margin:0; background:var(--ground); color:var(--ink); font:400 16px/1.5 var(--f-body); }
+body.locked{ overflow:hidden; }
+h1,h2,h3,h4{ margin:0; text-wrap:balance; }
+p{ margin:0; }
+button,input,select,textarea{ font:inherit; color:inherit; }
+button{ cursor:pointer; }
+a{ color:var(--brand); }
+:focus-visible{ outline:3px solid var(--brand); outline-offset:2px; }
+.num{ font-variant-numeric:tabular-nums; }
+.wrap{ width:100%; max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+.muted{ color:var(--ink-2); }
+.small{ font-size:14px; }
+
+/* buttons */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 18px; border-radius:999px;
+  border:1.5px solid var(--line); background:var(--plate); color:var(--ink); font-weight:700; text-decoration:none; white-space:nowrap; }
+.btn:hover{ border-color:var(--brand); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.btn-primary{ background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+.btn-primary:hover{ filter:brightness(1.08); }
+.btn-ghost{ border-color:transparent; background:transparent; }
+.btn-danger{ color:var(--bad); }
+.btn-danger.is-armed{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.btn-sm{ min-height:36px; padding:0 14px; font-size:14px; }
+.btn-wide{ width:100%; }
+.linkish{ background:none; border:0; padding:0; color:var(--brand); font-weight:700; text-decoration:underline; text-underline-offset:3px; }
+
+/* ───── customer site ───── */
+.demo-strip{ background:var(--warn-tint); color:var(--warn); font-size:14px; font-weight:600; }
+.demo-strip .wrap{ padding-block:8px; }
+.site-head .wrap{ padding-block:22px 4px; display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px; }
+.logo-plate{ width:116px; height:116px; flex:none; display:grid; place-items:center; background:#fff; border-radius:50%; box-shadow:var(--lift); }
+.brand-logo{ width:84px; height:84px; object-fit:contain; }
+.brand-text{ display:grid; gap:4px; flex:1 1 230px; min-width:0; }
+.brand-name{ font:900 clamp(34px, 9vw, 52px)/1 var(--f-display); color:var(--ink); }
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.brand-tag{ font-weight:600; color:var(--ink-2); }
+.brand-days{ font:900 14px/1.25 var(--f-display); text-transform:uppercase; color:var(--orange); letter-spacing:.01em; }
+.brand-addr{ display:flex; align-items:center; gap:6px; font-weight:700; font-size:14px; color:var(--ink-2); }
+.brand-addr svg{ width:14px; height:18px; flex:none; fill:var(--brand); }
+.call-top{ font:900 19px/1.2 var(--f-display); text-transform:uppercase; color:var(--brand); text-decoration:none; letter-spacing:.01em; }
+.call-top b{ white-space:nowrap; font-weight:900; }
+.track-pill{ margin-top:12px; display:flex; align-items:center; gap:10px; width:100%; padding:12px 14px; border-radius:var(--r-ctl);
+  background:var(--brand-tint); border:0; text-align:left; color:var(--ink); }
+.track-pill b{ font-weight:800; }
+.track-pill .go{ margin-left:auto; color:var(--brand); font-weight:700; white-space:nowrap; }
+.menu-head{ padding-block:26px 14px; display:grid; gap:4px; }
+.menu-date{ font-weight:700; color:var(--ink-2); }
+.menu-title{ font:800 clamp(34px, 8vw, 44px)/1 var(--f-display); }
+.menu-note{ color:var(--ink-2); max-width:60ch; }
+.menu-note.is-warn{ color:var(--warn); font-weight:600; }
+
+.tray{ border:12px solid transparent; border-radius:var(--r-tray); padding:6px 20px 14px; box-shadow:var(--lift);
+  background:linear-gradient(var(--plate), var(--plate)) padding-box,
+    repeating-linear-gradient(90deg, var(--check) 0 6px, transparent 6px 12px) border-box,
+    repeating-linear-gradient(0deg, var(--check) 0 6px, transparent 6px 12px) border-box,
+    linear-gradient(var(--check-ground), var(--check-ground)) border-box; }
+.cat{ padding-top:18px; }
+.cat-name{ display:flex; align-items:center; gap:12px; font:900 22px/1 var(--f-display); text-transform:uppercase; letter-spacing:.02em; color:var(--ink); padding-bottom:4px; }
+.cat-name::after{ content:""; flex:1; height:2px; background:var(--brand); opacity:.35; }
+.dish{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:12px 0; border-top:1px solid var(--line); }
+.cat-name + .dish{ border-top:0; }
+.dish-line{ display:flex; flex-wrap:wrap; align-items:baseline; column-gap:10px; row-gap:2px; min-width:0; }
+.dish-name{ font-weight:600; font-size:18px; line-height:1.3; flex:0 1 auto; max-width:100%; }
+.dish-meta{ flex:1 1 150px; display:flex; align-items:baseline; gap:8px; min-width:0; }   /* drops under a long name instead of squeezing it */
+.dish-portion{ color:var(--ink-2); font-size:14px; white-space:nowrap; }
+.dish-lead{ flex:1 1 12px; min-width:12px; border-bottom:2px dotted var(--line); transform:translateY(-5px); }
+.dish-price{ font-weight:700; font-size:18px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.dish-desc{ color:var(--ink-2); font-size:14px; margin-top:2px; }
+.dish.in-cart .dish-name{ color:var(--brand); }
+.dish-name, .dish-portion, .dish-price{ overflow-wrap:anywhere; }
+.qty{ display:flex; align-items:center; gap:2px; }
+.qty button{ width:44px; height:44px; border-radius:999px; border:1.5px solid var(--brand); background:var(--plate); color:var(--brand); font-size:24px; font-weight:700; line-height:1; display:grid; place-items:center; }
+.qty button.fill{ background:var(--brand); color:var(--on-brand); }
+.qty output{ min-width:28px; text-align:center; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums; }
+.qty button:disabled{ opacity:.35; cursor:not-allowed; }
+.empty-menu{ padding:28px 4px; display:grid; gap:10px; }
+
+.terms{ padding-block:28px 8px; }
+.terms h3{ font:800 22px/1 var(--f-display); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; }
+.terms dl{ margin:0; display:grid; grid-template-columns:max-content minmax(0,1fr); gap:8px 18px; }
+.terms dt{ color:var(--ink-2); font-weight:600; }
+.terms dd{ margin:0; font-weight:600; }
+@media (max-width:480px){ .terms dl{ grid-template-columns:minmax(0,1fr); gap:0; } .terms dd{ margin-bottom:10px; } }
+.site-foot .wrap{ padding-block:28px 120px; display:flex; flex-wrap:wrap; gap:12px 24px; color:var(--ink-2); font-size:14px; }
+
+.basket-bar{ position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--ink); color:var(--ground); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-shadow:0 -8px 24px -12px rgba(0,0,0,.4); }
+.basket-bar .wrap{ display:flex; align-items:center; gap:16px; padding-block:12px; }
+.basket-sum{ display:grid; line-height:1.2; }
+.basket-sum small{ opacity:.75; font-weight:600; }
+.basket-sum b{ font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; }
+.basket-bar .btn{ margin-left:auto; background:var(--brand); border-color:var(--brand); color:var(--on-brand); min-height:48px; padding:0 26px; font-size:17px; }
+
+/* sheets (checkout, thanks, dish editor, phone order) */
+.sheet{ position:fixed; inset:0; z-index:40; background:var(--scrim); display:flex; align-items:flex-end; justify-content:center; }
+.sheet-panel{ background:var(--plate); width:100%; max-width:600px; max-height:94vh; overflow:auto; overscroll-behavior:contain;
+  border-radius:22px 22px 0 0; padding:20px max(18px, env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px, env(safe-area-inset-left,0px)); }
+@media (min-width:700px){ .sheet{ align-items:center; } .sheet-panel{ border-radius:22px; max-height:90vh; } }
+.sheet-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.sheet-head h2{ font:800 30px/1 var(--f-display); }
+.sheet-head h2:focus{ outline:none; }
+.x{ width:44px; height:44px; border-radius:999px; border:0; background:var(--ground); font-size:22px; line-height:1; flex:none; }
+.lines{ display:grid; gap:2px; margin-bottom:12px; }
+.line{ display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:12px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
+.line .qty button{ width:36px; height:36px; font-size:20px; }
+.line-total{ font-weight:700; font-variant-numeric:tabular-nums; min-width:72px; text-align:right; }
+.totals{ display:grid; gap:4px; margin:10px 0 18px; }
+.totals div{ display:flex; justify-content:space-between; font-variant-numeric:tabular-nums; }
+.totals .grand{ font-size:20px; font-weight:800; }
+.notice{ padding:10px 12px; border-radius:var(--r-ctl); background:var(--warn-tint); color:var(--warn); font-weight:600; font-size:14px; margin-bottom:12px; }
+.notice.is-bad{ background:var(--bad-tint); color:var(--bad); }
+.notice.is-ok{ background:var(--ok-tint); color:var(--ok); }
+
+/* forms */
+.form{ display:grid; gap:14px; }
+.fields{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+.fields .wide{ grid-column:1 / -1; }
+@media (max-width:520px){ .fields{ grid-template-columns:minmax(0,1fr); } }
+.field{ display:grid; gap:6px; min-width:0; border:0; margin:0; padding:0; }
+.field > label, .field > legend{ font-weight:700; font-size:14px; padding:0; }
+.field small{ color:var(--ink-2); font-weight:500; }
+input[type=text],input[type=tel],input[type=email],input[type=password],input[type=number],input[type=time],input[type=search],input:not([type]),select,textarea{
+  width:100%; min-height:46px; padding:10px 12px; border-radius:var(--r-ctl); border:1.5px solid var(--line); background:var(--plate); }
+textarea{ min-height:64px; resize:vertical; }
+input:focus,select:focus,textarea:focus{ border-color:var(--brand); outline:none; box-shadow:0 0 0 3px var(--brand-tint); }
+.field.is-bad input,.field.is-bad textarea{ border-color:var(--bad); }
+.field .err{ color:var(--bad); font-size:13px; font-weight:600; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{ position:relative; }
+.chip input{ position:absolute; opacity:0; inset:0; margin:0; cursor:pointer; }
+.chip span{ display:inline-flex; align-items:center; min-height:40px; padding:0 14px; border-radius:999px; border:1.5px solid var(--line); font-weight:600; font-size:15px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.chip input:checked + span{ background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+.chip input:focus-visible + span{ outline:3px solid var(--brand); outline-offset:2px; }
+.check{ display:flex; align-items:center; gap:10px; font-weight:600; min-height:40px; }
+.check input{ width:20px; height:20px; accent-color:var(--brand); }
+.or-call{ text-align:center; color:var(--ink-2); font-size:15px; }
+.or-call b{ color:var(--ink); }
+
+/* order status (customer) */
+.big-no{ font:900 64px/1 var(--f-display); color:var(--brand); }
+.steps{ list-style:none; margin:18px 0; padding:0; display:grid; gap:0; counter-reset:s; }
+.steps li{ display:grid; grid-template-columns:32px minmax(0,1fr); gap:12px; align-items:center; padding:8px 0; color:var(--ink-2); font-weight:600; }
+.steps li::before{ counter-increment:s; content:counter(s); width:32px; height:32px; border-radius:999px; display:grid; place-items:center; border:2px solid var(--line); font-weight:800; font-size:14px; }
+.steps li.done{ color:var(--ink); }
+.steps li.done::before{ content:"✓"; background:var(--ok); border-color:var(--ok); color:#fff; }
+.steps li.now{ color:var(--ink); font-weight:800; }
+.steps li.now::before{ background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+
+/* toasts */
+.toasts{ position:fixed; left:0; right:0; bottom:calc(88px + env(safe-area-inset-bottom,0px)); z-index:60; display:grid; justify-items:center; gap:8px; pointer-events:none;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+.toast{ background:var(--ink); color:var(--ground); padding:12px 16px; border-radius:14px; font-weight:600; max-width:520px; box-shadow:var(--lift); pointer-events:auto; }
+.toast.is-bad{ background:var(--bad); color:#fff; }
+@media (prefers-reduced-motion: no-preference){ .toast{ animation:rise .22s ease-out; } @keyframes rise{ from{ transform:translateY(8px); opacity:0; } } }
+
+/* ───── admin ───── */
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:30; background:var(--ground); }
+body.in-admin::before{ background:var(--plate); }
+.adm-head{ position:sticky; top:env(safe-area-inset-top,0px); z-index:25; background:var(--plate); border-bottom:1px solid var(--line); }
+.adm-head .wrap{ display:flex; align-items:center; gap:10px 16px; flex-wrap:wrap; padding-block:10px; }
+.adm-brand{ font:900 26px/1 var(--f-display); color:var(--brand); }
+.adm-head .to-site{ margin-left:auto; font-weight:700; font-size:14px; }
+.tabs{ display:flex; gap:4px; width:100%; overflow-x:auto; }
+.tab{ position:relative; flex:1 1 auto; min-height:44px; padding:0 8px; font-size:15px; border:0; border-radius:10px; background:transparent; font-weight:700; color:var(--ink-2); }
+.tab[aria-selected="true"]{ background:var(--brand-tint); color:var(--brand); }
+.badge{ display:inline-grid; place-items:center; min-width:22px; height:22px; padding:0 6px; border-radius:999px; background:var(--bad); color:#fff; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px; }
+.adm-main{ padding-block:18px 120px; display:grid; gap:18px; }
+.panel{ background:var(--plate); border:1px solid var(--line); border-radius:16px; padding:16px; display:grid; gap:12px; }
+.panel h3{ font:800 22px/1.1 var(--f-display); }
+.seg{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:8px; }
+.seg button{ min-height:56px; padding:8px 12px; border-radius:var(--r-ctl); border:1.5px solid var(--line); background:var(--plate); font-weight:800; display:grid; gap:2px; text-align:left; }
+.seg button small{ font-weight:600; color:var(--ink-2); font-size:13px; }
+.seg button[aria-pressed="true"]{ border-color:var(--brand); background:var(--brand-tint); color:var(--brand); }
+.seg.compact button{ min-height:44px; text-align:center; }
+.row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.row .grow{ flex:1 1 180px; min-width:0; }
+.count-line{ font-weight:800; }
+
+.adm-cat{ display:grid; gap:2px; }
+.adm-cat h4{ display:flex; align-items:baseline; gap:10px; font:800 20px/1.2 var(--f-display); text-transform:uppercase; letter-spacing:.05em; color:var(--brand); padding:10px 0 4px; }
+.adm-cat h4 small{ font:600 13px var(--f-body); color:var(--ink-2); text-transform:none; letter-spacing:0; }
+.adm-dish{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:center; padding:6px 0; border-top:1px solid var(--line); }
+.adm-dish .info{ min-width:0; background:none; border:0; padding:6px 0; text-align:left; display:grid; gap:1px; }
+.adm-dish .info b{ font-weight:700; }
+.adm-dish .info span{ color:var(--ink-2); font-size:14px; font-variant-numeric:tabular-nums; }
+.adm-dish.off .info b{ color:var(--ink-2); font-weight:600; }
+.switch{ position:relative; width:56px; height:32px; flex:none; }
+.switch input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; z-index:1; }
+.switch span{ position:absolute; inset:0; border-radius:999px; background:var(--line); transition:background .15s; }
+.switch span::after{ content:""; position:absolute; top:4px; left:4px; width:24px; height:24px; border-radius:999px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .15s; }
+.switch input:checked + span{ background:var(--ok); }
+.switch input:checked + span::after{ transform:translateX(24px); }
+.switch input:focus-visible + span{ outline:3px solid var(--brand); outline-offset:2px; }
+.add-dish{ justify-self:start; margin:6px 0 4px; }
+.sticky-foot{ position:sticky; bottom:calc(12px + env(safe-area-inset-bottom,0px)); z-index:5; }
+.sticky-foot .btn{ width:100%; min-height:54px; font-size:17px; box-shadow:var(--lift); }
+
+.img-frame{ background:var(--ground); border-radius:16px; padding:12px; display:grid; place-items:center; }
+.img-frame img{ width:100%; max-width:900px; height:auto; border-radius:10px; box-shadow:var(--lift); background:#fff; }
+.img-actions{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:10px; }
+.copy-box{ width:100%; min-height:160px; font:14px/1.45 ui-monospace, Menlo, Consolas, monospace; }
+
+.kitchen ul{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:6px 18px; }
+.kitchen li{ display:flex; gap:10px; align-items:baseline; }
+.kitchen li b{ min-width:34px; text-align:right; font:800 22px/1 var(--f-display); color:var(--brand); font-variant-numeric:tabular-nums; }
+.cars{ display:grid; gap:8px; }
+.car-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:6px 0; border-top:1px solid var(--line); }
+.car-row:first-child{ border-top:0; }
+.car-row b{ min-width:80px; }
+.car-row .muted{ flex:1 1 140px; }
+.filters{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+.filters .chip span{ min-height:36px; font-size:14px; }
+
+.order{ background:var(--plate); border:1px solid var(--line); border-left:6px solid var(--line); border-radius:14px; padding:14px 16px; display:grid; gap:8px; }
+.order.st-new{ border-left-color:var(--bad); }
+.order.st-cooking{ border-left-color:var(--warn); }
+.order.st-on_way{ border-left-color:var(--brand); }
+.order.st-delivered{ border-left-color:var(--ok); }
+.order.st-cancelled{ opacity:.7; }
+.order-top{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 12px; }
+.order-no{ font:900 30px/1 var(--f-display); }
+.when{ font-weight:800; font-variant-numeric:tabular-nums; }
+.order-top .muted{ font-size:14px; }
+.pill{ display:inline-flex; align-items:center; padding:2px 10px; border-radius:999px; font-size:13px; font-weight:800; background:var(--ground); color:var(--ink-2); }
+.pill.st-new{ background:var(--bad-tint); color:var(--bad); }
+.pill.st-cooking{ background:var(--warn-tint); color:var(--warn); }
+.pill.st-on_way{ background:var(--brand-tint); color:var(--brand); }
+.pill.st-delivered{ background:var(--ok-tint); color:var(--ok); }
+.order-who b{ font-weight:800; }
+.order-items{ list-style:none; margin:0; padding:8px 0; border-block:1px dashed var(--line); display:grid; gap:2px; }
+.order-items li{ display:flex; justify-content:space-between; gap:12px; font-variant-numeric:tabular-nums; }
+.order-sum{ display:flex; flex-wrap:wrap; gap:6px 14px; font-weight:700; font-variant-numeric:tabular-nums; }
+.order-note{ background:var(--warn-tint); color:var(--warn); padding:6px 10px; border-radius:8px; font-weight:600; font-size:14px; }
+.order-cancel-why{ color:var(--bad); font-weight:600; }
+.flow{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px; }
+.flow button{ min-height:40px; border-radius:10px; border:1.5px solid var(--line); background:var(--plate); font-weight:700; font-size:14px; padding:0 4px; }
+.flow button[aria-pressed="true"]{ background:var(--ink); border-color:var(--ink); color:var(--ground); }
+@media (max-width:420px){ .flow button{ font-size:13px; } }
+.order-actions{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.order-actions select{ width:auto; min-height:38px; padding:4px 10px; }
+.cancel-form{ display:grid; gap:8px; padding:10px; border-radius:10px; background:var(--bad-tint); }
+.cancel-form .chips button{ min-height:34px; padding:0 12px; border-radius:999px; border:1.5px solid var(--line); background:var(--plate); font-size:14px; font-weight:600; }
+.pick{ display:grid; gap:2px; max-height:42vh; overflow:auto; border:1px solid var(--line); border-radius:12px; padding:4px 12px; margin-bottom:14px; }
+.pick .dish{ padding:8px 0; }
+.pick .qty button{ width:36px; height:36px; font-size:20px; }
+.signin{ max-width:420px; margin:40px auto; }
+.settings-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+.settings-grid .wide{ grid-column:1 / -1; }
+@media (max-width:560px){ .settings-grid{ grid-template-columns:minmax(0,1fr); } }
+.hint{ color:var(--ink-2); font-size:14px; }
+.lbl{ font-weight:700; font-size:14px; }
+.pic-box{ display:grid; place-items:center; min-height:150px; padding:10px; border-radius:12px; border:1.5px dashed var(--line); background:#fff; }
+.pic-box img{ max-height:180px; max-width:100%; object-fit:contain; }
+.file-in{ position:absolute; width:1px; height:1px; opacity:0; }
+</style>
+</head>
+<body>
+
+<!-- ═════════════ CUSTOMER SITE ═════════════ -->
+<div id="site">
+  <div class="demo-strip" id="demoStrip" hidden><div class="wrap">Демо версия: поръчките остават в този браузър и не стигат до кухнята.</div></div>
+  <header class="site-head">
+    <div class="wrap">
+      <span class="logo-plate" id="logoPlate" hidden><img class="brand-logo" id="brandLogo" alt=""></span>
+      <div class="brand-text">
+        <h1 class="brand-name" id="brandName">…</h1>
+        <p class="brand-tag" id="brandTag"></p>
+        <a class="call-top" id="callTop" href="#">Поръчай на тел.: <b class="num" id="callTopNo"></b></a>
+        <p class="brand-days" id="brandDays"></p>
+        <p class="brand-addr" id="brandAddr" hidden><svg viewBox="0 0 14 18" aria-hidden="true"><path d="M7 0a7 7 0 0 0-7 7c0 5 7 11 7 11s7-6 7-11a7 7 0 0 0-7-7zm0 9.6A2.6 2.6 0 1 1 7 4.4a2.6 2.6 0 0 1 0 5.2z"/></svg><span id="brandAddrText"></span></p>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <button type="button" class="track-pill" id="trackPill" hidden></button>
+    <section class="menu-head" aria-live="polite">
+      <p class="menu-date" id="menuDate"></p>
+      <h2 class="menu-title" id="menuTitle">Зареждане на менюто…</h2>
+      <p class="menu-note" id="menuNote"></p>
+    </section>
+    <section class="tray" id="tray" hidden aria-label="Ястия"></section>
+    <section class="terms" id="terms" hidden>
+      <h3>Доставка</h3>
+      <dl id="termsList"></dl>
+    </section>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <a id="viberLink" href="#" target="_blank" rel="noopener" hidden>Следете дневното меню във Viber</a>
+    <a href="#admin">Вход за персонала</a>
+  </div></footer>
+  <div class="basket-bar" id="basketBar" hidden>
+    <div class="wrap">
+      <div class="basket-sum"><small id="basketCount"></small><b id="basketTotal"></b></div>
+      <button type="button" class="btn" id="openCheckout">Поръчай</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════ ADMIN ═════════════ -->
+<div id="admin" hidden>
+  <header class="adm-head">
+    <div class="wrap">
+      <span class="adm-brand" id="admBrand"></span>
+      <a class="to-site" href="#">Към сайта</a>
+      <nav class="tabs" role="tablist" id="tabs" hidden>
+        <button class="tab" role="tab" id="tab-menu" data-tab="menu" aria-selected="true">Меню</button>
+        <button class="tab" role="tab" id="tab-image" data-tab="image" aria-selected="false">Снимка</button>
+        <button class="tab" role="tab" id="tab-orders" data-tab="orders" aria-selected="false">Поръчки<span class="badge" id="ordBadge" hidden></span></button>
+        <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false">Настройки</button>
+      </nav>
+    </div>
+  </header>
+  <div class="demo-strip" id="admDemo" hidden><div class="wrap">Демо: промените се пазят само в този браузър. Свържете Supabase (виж SETUP.md), за да работи за клиентите.</div></div>
+
+  <main class="wrap adm-main">
+    <!-- sign in (live mode) -->
+    <section class="panel signin" id="signin" hidden>
+      <h3>Вход за персонала</h3>
+      <form class="form" id="signinForm" novalidate>
+        <div class="field"><label for="si-email">Имейл</label><input id="si-email" type="email" autocomplete="username" required></div>
+        <div class="field"><label for="si-pass">Парола</label><input id="si-pass" type="password" autocomplete="current-password" required></div>
+        <p class="notice is-bad" id="signinErr" hidden></p>
+        <button class="btn btn-primary btn-wide" type="submit" id="signinBtn">Влез</button>
+      </form>
+    </section>
+
+    <!-- tab: today's menu -->
+    <section data-pane="menu" role="tabpanel" aria-labelledby="tab-menu" hidden>
+      <div class="adm-main" style="padding:0">
+        <div class="panel">
+          <h3>Менюто е за</h3>
+          <div class="seg" id="dayPick"></div>
+          <p class="notice" id="dayHint" hidden></p>
+        </div>
+        <div class="panel">
+          <div class="row">
+            <p class="count-line grow" id="onCount"></p>
+            <button type="button" class="btn btn-sm" id="clearMenu">Изключи всички</button>
+          </div>
+          <input type="search" id="dishSearch" placeholder="Намери ястие" aria-label="Намери ястие">
+          <div id="admDishes"></div>
+          <button type="button" class="btn btn-sm" id="newDish">+ Ново ястие</button>
+        </div>
+        <div class="sticky-foot"><button type="button" class="btn btn-primary" id="toImage">Готово — снимка за Viber</button></div>
+      </div>
+    </section>
+
+    <!-- tab: Viber image -->
+    <section data-pane="image" role="tabpanel" aria-labelledby="tab-image" hidden>
+      <div class="adm-main" style="padding:0">
+        <div class="panel">
+          <div class="row">
+            <h3 class="grow">Снимка за Viber</h3>
+            <div class="seg compact" id="imgTheme" style="flex:0 1 220px"></div>
+          </div>
+          <div class="img-frame"><img id="menuImg" alt="Днешното меню като снимка"></div>
+          <div class="img-actions">
+            <button type="button" class="btn btn-primary" id="shareImg" hidden>Изпрати във Viber</button>
+            <button type="button" class="btn" id="downloadImg">Свали снимката</button>
+            <button type="button" class="btn" id="copyImg">Копирай снимката</button>
+            <button type="button" class="btn" id="copyText">Копирай като текст</button>
+          </div>
+          <p class="hint" id="imgHint">На телефона „Изпрати във Viber“ отваря споделянето: изберете Viber и после канала. На компютъра свалете снимката или я копирайте и я пуснете в канала. Снимката се прави наново при всяка промяна в менюто.</p>
+          <textarea class="copy-box" id="copyFallback" readonly hidden aria-label="Менюто като текст"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- tab: orders -->
+    <section data-pane="orders" role="tabpanel" aria-labelledby="tab-orders" hidden>
+      <div class="adm-main" style="padding:0">
+        <div class="row">
+          <div class="seg compact grow" id="ordDay"></div>
+          <button type="button" class="btn btn-primary" id="phoneOrder">+ Поръчка по телефона</button>
+          <button type="button" class="btn" id="soundBtn" aria-pressed="false">Звук: изключен</button>
+        </div>
+        <div class="panel kitchen" id="kitchen"></div>
+        <div class="panel" id="carsPanel"><h3>Шофьори</h3><div class="cars" id="cars"></div></div>
+        <div class="filters" id="filters" role="radiogroup" aria-label="Покажи"></div>
+        <div id="ordList" style="display:grid;gap:12px"></div>
+      </div>
+    </section>
+
+    <!-- tab: settings -->
+    <section data-pane="settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <form class="adm-main" style="padding:0" id="settingsForm" novalidate>
+        <div class="panel">
+          <h3>Ресторант</h3>
+          <div class="settings-grid">
+            <div class="field"><label for="s-name">Име</label><input id="s-name"></div>
+            <div class="field"><label for="s-phone">Телефон за поръчки</label><input id="s-phone" type="tel"></div>
+            <div class="field wide"><label for="s-tagline">Подзаглавие</label><input id="s-tagline"></div>
+            <div class="field"><label for="s-website">Адрес на сайта <small>показва се на снимката</small></label><input id="s-website" placeholder="obed.bg"></div>
+            <div class="field"><label for="s-viber">Линк към Viber канала</label><input id="s-viber" placeholder="https://invite.viber.com/…"></div>
+            <div class="field"><label for="s-address">Адрес на ресторанта</label><input id="s-address"></div>
+            <div class="field"><label for="s-shophours">Работно време на място</label><input id="s-shophours" placeholder="11:00–19:00"></div>
+            <div class="field wide"><label for="s-days">Дни и часове за доставка <small>под телефона, на сайта и на снимката</small></label><input id="s-days"></div>
+            <div class="field wide"><label for="s-slogan">Надпис в рамката на снимката <small>до 2 реда</small></label><textarea id="s-slogan" rows="2"></textarea></div>
+            <div class="field wide"><label for="s-area">Къде доставяте</label><input id="s-area"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Лого и снимка</h3>
+          <div class="settings-grid">
+            <div class="field">
+              <span class="lbl">Лого</span>
+              <div class="pic-box"><img id="s-logo-img" alt="Логото"></div>
+              <div class="row">
+                <label class="btn btn-sm" for="s-logo">Качи логото</label><input type="file" id="s-logo" accept="image/*" class="file-in">
+                <button type="button" class="btn btn-sm btn-ghost" id="s-logo-reset">Върни това от Canva</button>
+              </div>
+              <p class="hint">Най-добре PNG с прозрачен фон.</p>
+            </div>
+            <div class="field">
+              <span class="lbl">Снимка горе вдясно на менюто</span>
+              <div class="pic-box"><img id="s-photo-img" alt="Снимката" hidden><span class="hint" id="s-photo-none">Няма снимка</span></div>
+              <div class="row">
+                <label class="btn btn-sm" for="s-photo">Качи снимка</label><input type="file" id="s-photo" accept="image/*" class="file-in">
+                <button type="button" class="btn btn-sm btn-ghost" id="s-photo-clear">Махни</button>
+              </div>
+              <p class="hint">Например ястие от Instagram. Избледнява към менюто, както зеленчуците в Canva.</p>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Поръчки</h3>
+          <label class="check"><input type="checkbox" id="s-ordering"> Приемаме поръчки през сайта</label>
+          <div class="settings-grid">
+            <div class="field"><label for="s-until">Поръчки за деня до</label><input id="s-until" type="time"></div>
+            <div class="field"><label for="s-min">Минимална поръчка, €</label><input id="s-min" inputmode="decimal"></div>
+            <div class="field"><label for="s-fee">Цена на доставката, €</label><input id="s-fee" inputmode="decimal"></div>
+            <div class="field"><label for="s-free">Безплатна доставка над, € <small>0 = няма</small></label><input id="s-free" inputmode="decimal"></div>
+            <div class="field wide"><label for="s-slots">Часове за доставка <small>по един на ред</small></label><textarea id="s-slots" rows="6"></textarea></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Коли и категории</h3>
+          <div class="settings-grid">
+            <div class="field"><label for="s-cars">Коли или шофьори <small>по един на ред</small></label><textarea id="s-cars" rows="5"></textarea></div>
+            <div class="field"><label for="s-cats">Категории в менюто <small>в този ред</small></label><textarea id="s-cats" rows="7"></textarea></div>
+          </div>
+        </div>
+        <div class="row">
+          <button type="submit" class="btn btn-primary grow" id="saveSettings">Запази настройките</button>
+          <button type="button" class="btn btn-danger" id="resetDemo" hidden>Започни демото отначало</button>
+          <button type="button" class="btn" id="signOut" hidden>Изход</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+
+<!-- ═════════════ SHEETS ═════════════ -->
+<div class="sheet" id="checkout" hidden role="dialog" aria-modal="true" aria-labelledby="coTitle">
+  <div class="sheet-panel">
+    <div class="sheet-head"><h2 id="coTitle" tabindex="-1">Вашата поръчка</h2><button type="button" class="x" data-close aria-label="Затвори">×</button></div>
+    <p class="notice" id="coForDay" hidden></p>
+    <div class="lines" id="coLines"></div>
+    <div class="totals" id="coTotals"></div>
+    <p class="notice" id="coMin" hidden></p>
+    <form class="form" id="coForm" novalidate>
+      <div id="coFields"></div>
+      <p class="notice is-bad" id="coErr" hidden></p>
+      <button type="submit" class="btn btn-primary btn-wide" id="coSend" style="min-height:54px;font-size:17px">Изпрати поръчката</button>
+      <p class="or-call">Предпочитате по телефона? Обадете се на <b class="num" id="coPhone"></b></p>
+    </form>
+  </div>
+</div>
+
+<div class="sheet" id="thanks" hidden role="dialog" aria-modal="true" aria-labelledby="thTitle">
+  <div class="sheet-panel">
+    <div class="sheet-head"><h2 id="thTitle" tabindex="-1">Поръчката е приета</h2><button type="button" class="x" data-close aria-label="Затвори">×</button></div>
+    <div id="thBody"></div>
+  </div>
+</div>
+
+<div class="sheet" id="dishSheet" hidden role="dialog" aria-modal="true" aria-labelledby="dsTitle">
+  <div class="sheet-panel">
+    <div class="sheet-head"><h2 id="dsTitle" tabindex="-1">Ястие</h2><button type="button" class="x" data-close aria-label="Затвори">×</button></div>
+    <form class="form" id="dishForm" novalidate>
+      <div class="fields">
+        <div class="field wide"><label for="d-name">Име на ястието</label><input id="d-name" required></div>
+        <div class="field"><label for="d-cat">Категория</label><select id="d-cat"></select></div>
+        <div class="field"><label for="d-portion">Грамаж <small>напр. 350 г</small></label><input id="d-portion"></div>
+        <div class="field"><label for="d-price">Цена, €</label><input id="d-price" inputmode="decimal" required></div>
+        <div class="field"><label for="d-sort">Подредба <small>по-малкото е по-горе</small></label><input id="d-sort" inputmode="numeric"></div>
+        <div class="field wide"><label for="d-desc">Описание <small>по желание</small></label><textarea id="d-desc" rows="2"></textarea></div>
+      </div>
+      <label class="check"><input type="checkbox" id="d-on"> В менюто за деня</label>
+      <div class="row">
+        <button type="submit" class="btn btn-primary grow">Запази</button>
+        <button type="button" class="btn btn-danger" id="d-delete" hidden>Изтрий</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sheet" id="phoneSheet" hidden role="dialog" aria-modal="true" aria-labelledby="poTitle">
+  <div class="sheet-panel">
+    <div class="sheet-head"><h2 id="poTitle" tabindex="-1">Поръчка по телефона</h2><button type="button" class="x" data-close aria-label="Затвори">×</button></div>
+    <div class="pick" id="poPick"></div>
+    <div class="totals" id="poTotals"></div>
+    <form class="form" id="poForm" novalidate>
+      <div id="poFields"></div>
+      <p class="notice is-bad" id="poErr" hidden></p>
+      <button type="submit" class="btn btn-primary btn-wide" id="poSend">Запиши поръчката</button>
+    </form>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* ════════════════════════════════════════════════════════════════
+   1. CONNECTION — paste your Supabase project's URL and anon key
+      (Supabase › Project Settings › API). Leave both empty for the demo,
+      which keeps everything in the browser.
+   ════════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = '';
+const SUPABASE_ANON_KEY = '';
+
+const LIVE = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
+const sb = LIVE ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+document.documentElement.lang = 'bg';
+
+/* ───────── helpers ───────── */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = (n) => (Number(n) || 0).toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.').replace(/[^\d.]/g, '')); return isFinite(n) ? n : 0; };
+const clone = (x) => JSON.parse(JSON.stringify(x));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const cap = (s) => s ? s[0].toLocaleUpperCase('bg') + s.slice(1) : s;
+const telHref = (p) => 'tel:' + String(p || '').replace(/[^\d+]/g, '');
+
+const TZ = 'Europe/Sofia';
+const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const addDays = (ds, n) => { const d = new Date(ds + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const tomorrow = () => addDays(today(), 1);
+const nowHM = () => new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+const dayLabel = (ds) => new Intl.DateTimeFormat('bg-BG', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(ds + 'T12:00:00Z'));
+const clock = (iso) => new Intl.DateTimeFormat('bg-BG', { hour: '2-digit', minute: '2-digit', timeZone: TZ }).format(new Date(iso));
+
+const DEFAULTS = {
+  name: 'Bahar Foods', tagline: 'Храна с душа!', phone: '0896 687878', viber: '', website: '',
+  address: 'бул. Прага 6', shop_hours: '11:00–19:00', delivery_days: 'Понеделник – петък 11:00–15:00ч.',
+  slogan: 'Твоят вкусен обяд\nза дома и офиса!', logo: '', photo: '',
+  area: 'Доставяме до дома и офиса', order_until: '14:30',
+  slots: ['Възможно най-скоро', '11:00 – 11:30', '11:30 – 12:00', '12:00 – 12:30', '12:30 – 13:00', '13:00 – 13:30', '13:30 – 14:00', '14:00 – 14:30', '14:30 – 15:00'],
+  delivery_fee: 0, free_from: 0, min_order: 0, ordering_on: true,
+  cars: ['Кола 1', 'Кола 2', 'Кола 3', 'Кола 4'],
+  categories: ['Супи', 'Салати', 'Основни', 'Добавки', 'Аламинути', 'Десерти'],
+};
+const DEFAULT_LOGO = 'data:image/png;base64,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';   // taken from the Canva menu; replace in Настройки with the original file
+const STATUS = {
+  new: { admin: 'Нова', cust: 'Приета' },
+  cooking: { admin: 'Готвим', cust: 'Приготвя се' },
+  on_way: { admin: 'На път', cust: 'На път към вас' },
+  delivered: { admin: 'Доставена', cust: 'Доставена' },
+  cancelled: { admin: 'Отказана', cust: 'Отказана' },
+};
+const FLOW = ['new', 'cooking', 'on_way', 'delivered'];
+
+/* ════════════════════════════════════════════════════════════════
+   2. DATA — the same calls in two flavours: Supabase (live) and the browser (demo)
+   ════════════════════════════════════════════════════════════════ */
+function liveApi() {
+  const fail = (e) => { throw new Error((e && e.message) || String(e)); };
+  const api = {
+    demo: false,
+    async load() {
+      const [s, d] = await Promise.all([
+        sb.from('settings').select('*').eq('id', 1).maybeSingle(),
+        sb.from('dishes').select('*').order('sort').order('name'),
+      ]);
+      if (s.error) fail(s.error); if (d.error) fail(d.error);
+      return { settings: { ...DEFAULTS, ...((s.data && s.data.data) || {}) }, menuDate: (s.data && s.data.menu_date) || null, dishes: d.data || [] };
+    },
+    async saveSettings(data) { const { error } = await sb.from('settings').update({ data, updated_at: new Date().toISOString() }).eq('id', 1); if (error) fail(error); },
+    async setMenuDate(date) { const { error } = await sb.from('settings').update({ menu_date: date, updated_at: new Date().toISOString() }).eq('id', 1); if (error) fail(error); },
+    async setAvailable(id, on) { const { error } = await sb.from('dishes').update({ available: on }).eq('id', id); if (error) fail(error); },
+    async clearMenu() { const { error } = await sb.from('dishes').update({ available: false }).eq('available', true); if (error) fail(error); },
+    async saveDish(x) {
+      const row = { name: x.name, category: x.category, portion: x.portion || null, price: x.price, description: x.description || null, sort: x.sort || 0, available: !!x.available };
+      const q = x.id ? sb.from('dishes').update(row).eq('id', x.id) : sb.from('dishes').insert([row]);
+      const { data, error } = await q.select().single(); if (error) fail(error); return data;
+    },
+    async deleteDish(id) { const { error } = await sb.from('dishes').delete().eq('id', id); if (error) fail(error); },
+    async placeOrder(payload) { const { data, error } = await sb.rpc('place_order', { payload }); if (error) fail(error); return data; },
+    async track(id) { const { data, error } = await sb.rpc('track_order', { order_id: id }); if (error) fail(error); return data; },
+    async orders(date) {
+      const { data, error } = await sb.from('orders').select('*, order_items(*)').eq('for_date', date).order('created_at', { ascending: false });
+      if (error) fail(error); return data || [];
+    },
+    async updateOrder(id, patch) { const { error } = await sb.from('orders').update(patch).eq('id', id); if (error) fail(error); },
+    async removeOrder(id) { const { error } = await sb.from('orders').delete().eq('id', id); if (error) fail(error); },
+    async session() { const { data } = await sb.auth.getSession(); return data.session; },
+    async isAdmin() {
+      const s = await api.session(); if (!s) return false;
+      const { data } = await sb.from('profiles').select('role').eq('id', s.user.id).maybeSingle();
+      return !!data && data.role === 'admin';
+    },
+    async signIn(email, password) { const { error } = await sb.auth.signInWithPassword({ email, password }); if (error) fail(error); },
+    async signOut() { await sb.auth.signOut(); },
+  };
+  return api;
+}
+
+function demoApi() {
+  const KEY = 'dm_demo_v2';
+  const SEED = [   // every dish from the Bahar Foods menus 12.10–30.10.2026; on = the 30.10 menu
+    ["Картофена крем супа", "Супи", "300мл.", 1.95, 1, 1],
+    ["Пилешка супа", "Супи", "300мл.", 2.3, 1, 2],
+    ["Таратор", "Супи", "300мл.", 1.8, 0, 3],
+    ["Крем супа от тиквички", "Супи", "300мл.", 1.95, 0, 4],
+    ["Крем супа от моркови", "Супи", "300мл.", 1.95, 0, 5],
+    ["Зеленчукова крем супа", "Супи", "300мл.", 1.95, 0, 6],
+    ["Крем супа от броколи", "Супи", "300мл.", 1.95, 0, 7],
+    ["Спаначена крем супа", "Супи", "300мл.", 1.95, 0, 8],
+    ["Крем супа от тиква", "Супи", "300мл.", 1.95, 0, 9],
+    ["Супа топчета", "Супи", "300мл.", 2.3, 0, 10],
+    ["Бистра пилешка супа", "Супи", "300мл.", 2.3, 0, 11],
+    ["Супа от пуешко месо", "Супи", "300мл.", 2.3, 0, 12],
+    ["Супа от свинско месо", "Супи", "300мл.", 2.3, 0, 13],
+    ["Агнешка курбан чорба", "Супи", "300мл.", 3.5, 0, 14],
+    ["Агнешка дроб чорба", "Супи", "300мл.", 3.5, 0, 15],
+    ["Супа от телешко месо", "Супи", "300мл.", 3.5, 0, 16],
+    ["Постни лозови сърми", "Салати", "200гр.", 2.5, 1, 1],
+    ["Картофена салата", "Салати", "200гр.", 2.5, 1, 2],
+    ["Зеле и моркови", "Салати", "200гр.", 2.5, 1, 3],
+    ["Нахут с печен патладжан и печена червена чушка", "Салати", "200гр.", 2.5, 1, 4],
+    ["Салата “Снежанка”", "Салати", "200гр.", 2.5, 1, 5],
+    ["Мариновани печени чушки", "Салати", "300гр.", 3.0, 1, 6],
+    ["Домашна туршия", "Салати", "200гр.", 3.0, 1, 7],
+    ["Шопска салата", "Салати", "200гр.", 2.5, 0, 8],
+    ["Млечна салата", "Салати", "200гр.", 2.5, 0, 9],
+    ["Салата от моркови и сусам", "Салати", "200гр.", 2.5, 0, 10],
+    ["Салата от моркови и цвекло", "Салати", "200гр.", 2.5, 0, 11],
+    ["Печено цвекло с розмарин", "Салати", "200гр.", 2.5, 0, 12],
+    ["Печени зеленчуци", "Салати", "200гр.", 2.5, 0, 13],
+    ["Зелен фасул с печени картофки яхния", "Основни", "350гр.", 3.5, 1, 1],
+    ["Ориз с кисело зеле", "Основни", "350гр.", 3.5, 1, 2],
+    ["Кюфтенца с дом. сос", "Основни", "350гр.", 4.6, 1, 3],
+    ["Пилешко бутче с ориз", "Основни", "350гр.", 4.8, 1, 4],
+    ["Пиле “Жулиен”, гарнирано с картофено пюре", "Основни", "350гр.", 5.6, 1, 5],
+    ["Свинско по Родопски", "Основни", "350гр.", 5.6, 1, 6],
+    ["Зеленчуков огретен", "Основни", "350гр.", 3.5, 0, 7],
+    ["Ориз с праз и маслини", "Основни", "350гр.", 3.5, 0, 8],
+    ["Постен зелен фасул с картофи", "Основни", "350гр.", 3.5, 0, 9],
+    ["Ориз с чушки и гъби", "Основни", "350гр.", 3.5, 0, 10],
+    ["Спанак с ориз", "Основни", "350гр.", 3.5, 0, 11],
+    ["Боб яхния", "Основни", "350гр.", 3.5, 0, 12],
+    ["Ориз с праз и домати", "Основни", "350гр.", 3.5, 0, 13],
+    ["Ориз със зеленчуци", "Основни", "350гр.", 3.5, 0, 14],
+    ["Зелен фасул плакия", "Основни", "350гр.", 3.5, 0, 15],
+    ["Яхния от грах и картофки", "Основни", "350гр.", 3.5, 0, 16],
+    ["Ориз с горски гъби", "Основни", "350гр.", 3.5, 0, 17],
+    ["Пиле с ориз", "Основни", "350гр.", 3.8, 0, 18],
+    ["Паста със зеленчуци", "Основни", "350гр.", 3.8, 0, 19],
+    ["Яйца по Северняшки", "Основни", "350гр.", 3.8, 0, 20],
+    ["Миш-маш", "Основни", "350гр.", 3.8, 0, 21],
+    ["Чушки с дом. сос и плочка сиренце", "Основни", "350гр.", 3.8, 0, 22],
+    ["Патладжан в дом. сос", "Основни", "350гр.", 3.8, 0, 23],
+    ["Патладжан с дом. сос и моцарела", "Основни", "350гр.", 4.1, 0, 24],
+    ["Картофена запеканка с бекон и сметана", "Основни", "350гр.", 4.1, 0, 25],
+    ["Огретен от карфиол", "Основни", "350гр.", 4.1, 0, 26],
+    ["Спаначено суфле", "Основни", "350гр.", 4.1, 0, 27],
+    ["Яйца по Панагюрски", "Основни", "350гр.", 4.1, 0, 28],
+    ["Юнашко кюфте с гарнитура пухкаво картофено пюре", "Основни", "350гр.", 4.6, 0, 29],
+    ["Пилешки дробчета", "Основни", "350гр.", 4.6, 0, 30],
+    ["Пълнен патладжан с мляно месо", "Основни", "350гр.", 4.6, 0, 31],
+    ["Лазаня “Болонезе”", "Основни", "350гр.", 4.6, 0, 32],
+    ["Руло “Мозайка”, гарнирано с пухкаво картофено пюре", "Основни", "350гр.", 4.6, 0, 33],
+    ["Овчарски пай", "Основни", "350гр.", 4.6, 0, 34],
+    ["Пълнени чушки с мляно месо и ориз", "Основни", "350гр.", 4.6, 0, 35],
+    ["Зелеви сърми с мляно месо и ориз", "Основни", "350гр.", 4.6, 0, 36],
+    ["Домашна мусака", "Основни", "350гр.", 4.6, 0, 37],
+    ["Талиатели Карбонара", "Основни", "350гр.", 4.6, 0, 38],
+    ["Кюфтета по Чирпански", "Основни", "350гр.", 4.6, 0, 39],
+    ["Унгарско кюфте с пухкаво картофено пюре", "Основни", "350гр.", 4.6, 0, 40],
+    ["Агнешка дроб сърма", "Основни", "350гр.", 4.8, 0, 41],
+    ["Пиле “Тика масала” с гарнитура", "Основни", "350гр.", 5.6, 0, 42],
+    ["Традиционна свинска кавърма", "Основни", "350гр.", 5.6, 0, 43],
+    ["Пиле с броколи и сметана", "Основни", "350гр.", 5.6, 0, 44],
+    ["Печено свинско със сос и пухкаво картофено пюре", "Основни", "350гр.", 5.6, 0, 45],
+    ["Свински късчета с грах и картофи", "Основни", "350гр.", 5.6, 0, 46],
+    ["Пиле “Лютика”, гарнирано с ориз Басмати", "Основни", "350гр.", 5.6, 0, 47],
+    ["Свинско по Странджански с гарнитура", "Основни", "350гр.", 5.6, 0, 48],
+    ["Свинско с ориз по ловджийски", "Основни", "350гр.", 5.6, 0, 49],
+    ["Пилешко филе с гъби и сметана, гарнирано с билков ориз", "Основни", "350гр.", 5.6, 0, 50],
+    ["Свинско със спанак", "Основни", "350гр.", 5.6, 0, 51],
+    ["Пиле в сладко-кисел сос", "Основни", "350гр.", 5.6, 0, 52],
+    ["Свинско с гъбен сос и пухкаво картофено пюре", "Основни", "350гр.", 5.6, 0, 53],
+    ["Тортила с крехко свинско и зеленчуци", "Основни", "350гр.", 5.6, 0, 54],
+    ["Пиле “Султан кебап”", "Основни", "350гр.", 5.6, 0, 55],
+    ["Тортила “Чили кон карне”", "Основни", "350гр.", 5.6, 0, 56],
+    ["Свински печен джолан с пухкаво картофено пюре", "Основни", "350гр.", 5.6, 0, 57],
+    ["Свински жулиени с нудли и зеленчуци в азиатски стил", "Основни", "350гр.", 5.6, 0, 58],
+    ["Пиле “4 сирена”, гарнирано с ориз Басмати", "Основни", "350гр.", 5.6, 0, 59],
+    ["Свински винен кебап с бял ориз", "Основни", "350гр.", 5.6, 0, 60],
+    ["Пилешко филе с плънка от горски гъби и ориз Басмати", "Основни", "350гр.", 5.6, 0, 61],
+    ["Свинско с печени картофки", "Основни", "350гр.", 5.6, 0, 62],
+    ["Свинско с кисело зеле", "Основни", "350гр.", 5.6, 0, 63],
+    ["Тортила с пилешко филе и зеленчуци", "Основни", "350гр.", 5.6, 0, 64],
+    ["Пилешко филе на грил с гарнитура", "Основни", "350гр.", 5.9, 0, 65],
+    ["Скумрия по Гръцки в доматен сос", "Основни", "350гр.", 6.9, 0, 66],
+    ["Крехко пуешко с прясно зеле", "Основни", "350гр.", 6.9, 0, 67],
+    ["Сочно пуешко със сос и задушени зеленчуци", "Основни", "350гр.", 6.9, 0, 68],
+    ["Банска капама", "Основни", "350гр.", 6.9, 0, 69],
+    ["Крехко телешко, гарнирано с пухкаво картофено пюре", "Основни", "350гр.", 6.9, 0, 70],
+    ["Пуешко филе със задушени зеленчуци", "Основни", "350гр.", 6.9, 0, 71],
+    ["Агнешко по Гергьовски", "Основни", "350гр.", 7.5, 0, 72],
+    ["Агнешко със спанак и горски гъби", "Основни", "350гр.", 7.9, 0, 73],
+    ["Питка с квас", "Добавки", "1бр.", 0.8, 1, 1],
+    ["Порция мариновани люти чушки", "Добавки", "150гр.", 1.0, 1, 2],
+    ["Картофено кюфте", "Аламинути", "1бр.", 1.3, 1, 1],
+    ["Спаначено кюфте", "Аламинути", "1бр.", 1.3, 1, 2],
+    ["Кашкавал пане", "Аламинути", "1бр.", 2.8, 1, 3],
+    ["Шницел от мляно месо", "Аламинути", "1бр.", 2.5, 1, 4],
+    ["Домашно пържено кюфте", "Аламинути", "1бр.", 1.3, 1, 5],
+    ["Хрупкава риба “Тилапия”", "Аламинути", "1бр.", 3.9, 1, 6],
+    ["Мляко с ориз", "Десерти", "", 1.3, 1, 1],
+    ["Млечна баница", "Десерти", "", 2.5, 1, 2],
+    ["Макарони на фурна", "Десерти", "", 2.5, 1, 3],
+    ["Грис халва", "Десерти", "", 1.3, 0, 4],
+    ["Сладък салам", "Десерти", "", 2.0, 0, 5],
+    ["Домашен ябълков щрудел", "Десерти", "", 2.5, 0, 6],
+    ["Домашен кекс с ябълки", "Десерти", "", 2.5, 0, 7],
+    ["Домашен еклер", "Десерти", "", 2.5, 0, 8],
+    ["Домашна бисквитена торта", "Десерти", "", 2.5, 0, 9],
+    ["Крем карамел с тиква", "Десерти", "", 2.5, 0, 10],
+    ["Печена тиква", "Десерти", "", 2.5, 0, 11],
+    ["Крем с профитероли", "Десерти", "", 3.5, 0, 12],
+  ];
+  function seed() {
+    const dishes = SEED.map(([name, category, portion, price, on, sort]) => ({ id: uid(), name, category, portion: portion || null, price, available: !!on, sort, description: null }));
+    const t = today(), late = nowHM() > DEFAULTS.order_until;
+    const menu_date = late ? addDays(t, 1) : t;            // after the cut-off the demo is set up for tomorrow, so ordering works
+    const by = (n) => dishes.find((d) => d.name === n);
+    const ex = [   // example orders, so the board isn't empty in the demo
+      ['Иван Петров', '0888 412 907', 'Финтех Лаб ООД', 'бул. Витоша 120, ет. 4', '12:00 – 12:30', 'delivered', 'Кола 1', [['Пилешко бутче с ориз', 2], ['Картофена крем супа', 2], ['Питка с квас', 2]], 'web', 190, true, '206455128', null],
+      ['Мария Георгиева', '0899 220 145', 'Атлас Консулт', 'ул. Хан Аспарух 25, офис 3', '12:30 – 13:00', 'on_way', 'Кола 1', [['Свинско по Родопски', 1], ['Картофена салата', 1], ['Мляко с ориз', 1]], 'web', 150, false, null, 'Звъннете от входа, домофонът не работи'],
+      ['Николай Стоянов', '0878 330 611', 'Студио Прага', 'бул. Прага 18, ет. 2, рецепция', '12:30 – 13:00', 'cooking', 'Кола 2', [['Кюфтенца с дом. сос', 3], ['Зеле и моркови', 3]], 'phone', 95, false, null, null],
+      ['Елена Димитрова', '0887 501 233', '', 'бул. Пенчо Славейков 15, ет. 5', 'Възможно най-скоро', 'new', null, [['Зелен фасул с печени картофки яхния', 1], ['Постни лозови сърми', 1]], 'web', 40, false, null, 'Без лук, моля'],
+      ['Георги Иванов', '0896 118 740', 'Нова Логистик', 'ул. Фритьоф Нансен 9', '13:00 – 13:30', 'new', null, [['Пиле “Жулиен”, гарнирано с картофено пюре', 4], ['Пилешка супа', 4], ['Шницел от мляно месо', 2]], 'web', 12, true, '131762205', null],
+    ];
+    let seq = 1040;
+    const orders = ex.map(([name, phone, company, address, time, status, car, items, source, minsAgo, invoice, eik, note]) => {
+      const lines = items.map(([n, q]) => ({ id: uid(), dish_id: by(n).id, name: n, price: by(n).price, qty: q }));
+      const sub = lines.reduce((s, l) => s + l.price * l.qty, 0);
+      return { id: uid(), no: ++seq, created_at: new Date(Date.now() - minsAgo * 60000).toISOString(), for_date: menu_date, status, source,
+        customer_name: name, customer_phone: phone, company: company || null, delivery_address: address, delivery_time: time, delivery_note: note,
+        invoice, eik, payment_method: invoice ? 'card' : 'cash', subtotal: sub, delivery_fee: 0, total: sub, car, cancel_reason: null, order_items: lines };
+    });
+    return { settings: { ...DEFAULTS }, menu_date, dishes, orders, seq };
+  }
+  let db = store.get(KEY, null);
+  if (!db || !Array.isArray(db.dishes)) { db = seed(); store.set(KEY, db); }
+  const save = () => store.set(KEY, db);
+  const fresh = () => { const d = store.get(KEY, null); if (d && Array.isArray(d.dishes)) db = d; };   // another tab (e.g. the admin) may have changed it
+  const err = (code) => { throw new Error(code); };
+  return {
+    demo: true,
+    async load() { fresh(); return { settings: { ...DEFAULTS, ...db.settings }, menuDate: db.menu_date, dishes: clone(db.dishes) }; },
+    async saveSettings(data) { fresh(); db.settings = data; save(); },
+    async setMenuDate(date) { fresh(); db.menu_date = date; save(); },
+    async setAvailable(id, on) { fresh(); const d = db.dishes.find((x) => x.id === id); if (d) { d.available = on; save(); } },
+    async clearMenu() { fresh(); db.dishes.forEach((d) => { d.available = false; }); save(); },
+    async saveDish(x) { fresh();
+      let d = x.id && db.dishes.find((y) => y.id === x.id);
+      if (d) Object.assign(d, x); else { d = { ...x, id: uid() }; db.dishes.push(d); }
+      save(); return clone(d);
+    },
+    async deleteDish(id) { fresh(); db.dishes = db.dishes.filter((d) => d.id !== id); save(); },
+    async placeOrder(p, asAdmin) { fresh();           // the same rules as place_order() in setup.sql
+      const cfg = { ...DEFAULTS, ...db.settings }, t = today(), c = p.customer || {};
+      if (!db.menu_date || db.menu_date < t) err('menu_closed');
+      if (!asAdmin) {
+        if (cfg.ordering_on === false) err('ordering_off');
+        if (db.menu_date === t && cfg.order_until && nowHM() > cfg.order_until) err('too_late');
+      }
+      if (!String(c.name || '').trim() || !String(c.address || '').trim() || String(c.phone || '').replace(/\D/g, '').length < 6) err('missing_fields');
+      const lines = []; let missing = 0;
+      (p.items || []).forEach((it) => {
+        const d = db.dishes.find((x) => x.id === it.id && x.available);
+        if (!d) { missing++; return; }
+        lines.push({ id: uid(), dish_id: d.id, name: d.name, price: d.price, qty: Math.max(1, Math.min(50, Math.round(it.qty) || 1)) });
+      });
+      if (missing) err('unavailable');
+      if (!lines.length) err('empty');
+      const sub = lines.reduce((s, l) => s + l.price * l.qty, 0);
+      if (!asAdmin && sub < num(cfg.min_order)) err('min_order');
+      const fee = num(cfg.free_from) > 0 && sub >= num(cfg.free_from) ? 0 : num(cfg.delivery_fee);
+      const o = { id: uid(), no: ++db.seq, created_at: new Date().toISOString(), for_date: db.menu_date, status: 'new',
+        source: asAdmin && p.source === 'phone' ? 'phone' : 'web', customer_name: c.name.trim(), customer_phone: c.phone.trim(),
+        company: c.company || null, delivery_address: c.address.trim(), delivery_time: c.time || null, delivery_note: c.note || null,
+        invoice: !!c.invoice, eik: c.eik || null, payment_method: p.payment === 'card' ? 'card' : 'cash',
+        subtotal: sub, delivery_fee: fee, total: sub + fee, car: null, cancel_reason: null, order_items: lines };
+      db.orders.push(o); save();
+      return { id: o.id, no: o.no, total: o.total, for_date: o.for_date };
+    },
+    async track(id) { fresh(); const o = db.orders.find((x) => x.id === id); return o ? { no: o.no, status: o.status, for_date: o.for_date, total: o.total, delivery_time: o.delivery_time, cancel_reason: o.cancel_reason } : null; },
+    async orders(date) { fresh(); return clone(db.orders.filter((o) => o.for_date === date).sort((a, b) => b.created_at.localeCompare(a.created_at))); },
+    async updateOrder(id, patch) { fresh(); const o = db.orders.find((x) => x.id === id); if (o) { Object.assign(o, patch); save(); } },
+    async removeOrder(id) { fresh(); db.orders = db.orders.filter((o) => o.id !== id); save(); },
+    async session() { return { demo: true }; },
+    async isAdmin() { return true; },
+    async signIn() {}, async signOut() {},
+    reset() { store.del(KEY); db = seed(); save(); },
+  };
+}
+
+const api = LIVE ? liveApi() : demoApi();
+
+/* ───────── state ───────── */
+const state = { settings: { ...DEFAULTS }, menuDate: null, dishes: [], cart: {}, loaded: false, admin: false };
+const S = () => state.settings;
+const dishById = (id) => state.dishes.find((d) => d.id === id);
+const onMenu = () => state.dishes.filter((d) => d.available);
+const bySort = (a, b) => (a.sort || 0) - (b.sort || 0) || a.name.localeCompare(b.name, 'bg');
+function groups(list, keepEmpty) {
+  const cats = [...(S().categories || [])];
+  list.forEach((d) => { if (!cats.includes(d.category)) cats.push(d.category); });
+  return cats.map((cat) => ({ cat, items: list.filter((d) => d.category === cat).sort(bySort) })).filter((g) => keepEmpty || g.items.length);
+}
+function ordering() {
+  const md = state.menuDate, t = today();
+  if (!md || md < t) return { open: false, why: 'stale' };
+  const base = { forDate: md, tomorrow: md > t };
+  if (S().ordering_on === false) return { ...base, open: false, why: 'off' };
+  if (md === t && S().order_until && nowHM() > S().order_until) return { ...base, open: false, why: 'late' };
+  return { ...base, open: true };
+}
+const logoSrc = () => S().logo || DEFAULT_LOGO;
+function fee(sub) { const s = S(); return num(s.free_from) > 0 && sub >= num(s.free_from) ? 0 : num(s.delivery_fee); }
+
+/* ───────── toasts ───────── */
+function toast(msg, bad) {
+  const el = document.createElement('div'); el.className = 'toast' + (bad ? ' is-bad' : ''); el.textContent = msg;
+  $('#toasts').appendChild(el); setTimeout(() => el.remove(), bad ? 6500 : 3800);
+}
+
+/* ───────── sheets ───────── */
+let returnFocus = [];
+function openSheet(id) {
+  returnFocus.push(document.activeElement);
+  const el = $('#' + id); el.hidden = false; document.body.classList.add('locked');
+  el.querySelector('.sheet-panel').scrollTop = 0;
+  requestAnimationFrame(() => { const h = el.querySelector('h2'); if (h) h.focus({ preventScroll: true }); });
+}
+function closeSheet(id) {
+  const el = $('#' + id); if (el.hidden) return; el.hidden = true;
+  if (!$$('.sheet:not([hidden])').length) document.body.classList.remove('locked');
+  const f = returnFocus.pop(); if (f && f.focus) f.focus({ preventScroll: true });
+  if (id === 'thanks') stopTrackPoll();
+}
+$$('.sheet').forEach((el) => {
+  el.addEventListener('click', (e) => { if (e.target === el || e.target.closest('[data-close]')) closeSheet(el.id); });
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const open = $$('.sheet:not([hidden])').pop(); if (open) closeSheet(open.id); } });
+
+/* ════════════════════════════════════════════════════════════════
+   3. CUSTOMER SITE
+   ════════════════════════════════════════════════════════════════ */
+function renderSite() {
+  const s = S(), st = ordering();
+  document.title = s.name + ' — обедно меню';
+  $('#demoStrip').hidden = !api.demo;
+  const logo = logoSrc(), bl = $('#brandLogo');
+  $('#logoPlate').hidden = !logo; if (logo) { bl.src = logo; bl.alt = s.name; }
+  $('#brandName').textContent = s.name; $('#brandName').classList.toggle('sr-only', !!logo);   // the logo already says the name
+  $('#brandTag').textContent = logo ? '' : (s.tagline || ''); $('#brandTag').hidden = !!logo || !s.tagline;
+  $('#callTop').href = telHref(s.phone); $('#callTopNo').textContent = s.phone;
+  $('#brandDays').textContent = (s.delivery_days || '').replace(/(\d)\s*([–-])\s*(\d)/g, '$1\u2060$2\u2060$3');   // keep 11:00–15:00 on one line $('#brandDays').hidden = !s.delivery_days;
+  const addr = [s.address, s.shop_hours].filter(Boolean).join(' ');
+  $('#brandAddr').hidden = !addr; $('#brandAddrText').textContent = addr;
+  const vl = $('#viberLink'); vl.hidden = !s.viber; if (s.viber) vl.href = s.viber;
+
+  const date = $('#menuDate'), title = $('#menuTitle'), note = $('#menuNote');
+  note.classList.remove('is-warn');
+  if (!state.loaded) return;
+  const wd = new Date(today() + 'T12:00:00Z').getUTCDay();
+  if (st.why === 'stale' && (wd === 0 || wd === 6)) {
+    date.textContent = cap(dayLabel(today()));
+    title.textContent = 'Днес почиваме';
+    note.innerHTML = `Доставяме ${esc((s.delivery_days || 'понеделник – петък').toLocaleLowerCase('bg'))}. Менюто за понеделник излиза в понеделник сутрин${s.viber ? ', и в <a href="' + esc(s.viber) + '" target="_blank" rel="noopener">канала ни във Viber</a>' : ''}.`;
+  } else if (st.why === 'stale') {
+    date.textContent = cap(dayLabel(today()));
+    title.textContent = 'Менюто за днес идва скоро';
+    note.innerHTML = `Публикуваме го всяка сутрин${s.viber ? ' и в <a href="' + esc(s.viber) + '" target="_blank" rel="noopener">канала ни във Viber</a>' : ''}. Междувременно се обадете на <a class="num" href="${telHref(s.phone)}">${esc(s.phone)}</a>.`;
+  } else {
+    date.textContent = cap(dayLabel(st.forDate));
+    title.textContent = st.tomorrow ? 'Менюто за утре' : 'Днешното меню';
+    if (st.why === 'late') { note.innerHTML = `Онлайн поръчките за днес приключиха в ${esc(s.order_until)}. Обадете се на <a class="num" href="${telHref(s.phone)}">${esc(s.phone)}</a>, може още да успеем.`; note.classList.add('is-warn'); }
+    else if (st.why === 'off') { note.innerHTML = `Днес приемаме поръчки само по телефона: <a class="num" href="${telHref(s.phone)}">${esc(s.phone)}</a>.`; note.classList.add('is-warn'); }
+    else if (st.tomorrow) note.textContent = 'Поръчайте сега и ще доставим утре до офиса.';
+    else note.textContent = `Поръчки до ${s.order_until}. Доставяме до офиса.`;
+  }
+  renderTray(st);
+  renderTerms();
+  renderBasket();
+}
+
+function qtyHtml(id, q, disabled, label) {
+  if (!q) return `<div class="qty"><button type="button" class="fill" data-add="${id}" aria-label="Добави ${esc(label)}" ${disabled ? 'disabled' : ''}>+</button></div>`;
+  return `<div class="qty"><button type="button" data-dec="${id}" aria-label="Едно по-малко">−</button><output class="num" aria-label="Брой">${q}</output><button type="button" class="fill" data-add="${id}" aria-label="Още едно" ${disabled ? 'disabled' : ''}>+</button></div>`;
+}
+function dishRow(d, q, disabled) {
+  return `<div class="dish${q ? ' in-cart' : ''}" data-dish="${d.id}">
+      <div style="min-width:0">
+        <div class="dish-line"><span class="dish-name">${esc(d.name)}</span><span class="dish-meta">${d.portion ? `<span class="dish-portion">${esc(d.portion)}</span>` : ''}<span class="dish-lead" aria-hidden="true"></span><span class="dish-price">${money(d.price)}</span></span></div>
+        ${d.description ? `<p class="dish-desc">${esc(d.description)}</p>` : ''}
+      </div>
+      ${qtyHtml(d.id, q, disabled, d.name)}
+    </div>`;
+}
+function renderTray(st) {
+  const tray = $('#tray');
+  if (st.why === 'stale') { tray.hidden = true; return; }
+  const list = onMenu();
+  tray.hidden = false;
+  if (!list.length) { tray.innerHTML = `<div class="empty-menu"><b>Менюто още се подрежда.</b><span class="muted">Опитайте след малко или се обадете на ${esc(S().phone)}.</span></div>`; return; }
+  tray.innerHTML = groups(list).map((g) => `<div class="cat"><h3 class="cat-name">${esc(g.cat)}</h3>${g.items.map((d) => dishRow(d, state.cart[d.id] || 0, !st.open)).join('')}</div>`).join('');
+}
+function renderTerms() {
+  const s = S(), rows = [];
+  rows.push(['Къде', s.area || 'В центъра на града']);
+  const f = num(s.delivery_fee), free = num(s.free_from);
+  rows.push(['Доставка', f > 0 ? `${money(f)}${free > 0 ? `, безплатна над ${money(free)}` : ''}` : 'Безплатна']);
+  if (num(s.min_order) > 0) rows.push(['Минимална поръчка', money(s.min_order)]);
+  rows.push(['Плащане', 'В брой или с карта при доставка']);
+  rows.push(['Поръчки за деня', `до ${s.order_until || '14:00'}, по телефона и тук`]);
+  $('#termsList').innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  $('#terms').hidden = !state.loaded;
+}
+
+/* basket */
+const cartKey = 'dm_cart';
+function saveCart() { store.set(cartKey, { date: state.menuDate, items: state.cart }); }
+function loadCart() {
+  const c = store.get(cartKey, null);
+  state.cart = {};
+  if (c && c.date === state.menuDate && c.items) Object.entries(c.items).forEach(([id, q]) => { const d = dishById(id); if (d && d.available && q > 0) state.cart[id] = q; });
+}
+function cartLines() { return Object.entries(state.cart).map(([id, qty]) => ({ d: dishById(id), qty })).filter((l) => l.d && l.d.available && l.qty > 0); }
+function cartSum() { return cartLines().reduce((s, l) => s + l.d.price * l.qty, 0); }
+function cartCount() { return cartLines().reduce((s, l) => s + l.qty, 0); }
+function setQty(id, q) {
+  q = Math.max(0, Math.min(50, q));
+  if (q) state.cart[id] = q; else delete state.cart[id];
+  saveCart();
+  $$(`[data-dish="${id}"]`, $('#tray')).forEach((row) => { row.outerHTML = dishRow(dishById(id), q, !ordering().open); });
+  renderBasket();
+  if (!$('#checkout').hidden) { if (cartCount()) renderCheckoutLines(); else closeSheet('checkout'); }
+}
+function renderBasket() {
+  const n = cartCount(), st = ordering();
+  $('#basketBar').hidden = !n || !st.open;
+  if (!n) return;
+  $('#basketCount').textContent = plural(n, 'порция', 'порции');
+  $('#basketTotal').textContent = money(cartSum());
+}
+$('#tray').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-add]'), m = e.target.closest('[data-dec]');
+  if (a) setQty(a.dataset.add, (state.cart[a.dataset.add] || 0) + 1);
+  if (m) setQty(m.dataset.dec, (state.cart[m.dataset.dec] || 0) - 1);
+  const id = a ? a.dataset.add : m ? m.dataset.dec : null;   // the row is redrawn, so put focus back on its button
+  if (id) { const row = $(`[data-dish="${id}"]`, $('#tray')); const again = row && (row.querySelector(a ? '[data-add]' : '[data-dec]') || row.querySelector('[data-add]')); if (again) again.focus({ preventScroll: true }); }
+});
+
+/* order form (shared by the checkout and the admin's phone orders) */
+function orderFields(p) {
+  const s = S(), saved = p === 'co' ? store.get('dm_customer', {}) : {};
+  const slots = (s.slots && s.slots.length ? s.slots : DEFAULTS.slots);
+  return `
+    <div class="form">
+      <div class="fields">
+        <div class="field"><label for="${p}-name">Име</label><input id="${p}-name" autocomplete="name" value="${esc(saved.name || '')}"><span class="err" hidden>Напишете име</span></div>
+        <div class="field"><label for="${p}-phone">Телефон</label><input id="${p}-phone" type="tel" inputmode="tel" autocomplete="tel" value="${esc(saved.phone || '')}"><span class="err" hidden>Напишете телефон, за да можем да ви се обадим</span></div>
+        <div class="field wide"><label for="${p}-company">Фирма или офис <small>по желание</small></label><input id="${p}-company" autocomplete="organization" value="${esc(saved.company || '')}"></div>
+        <div class="field wide"><label for="${p}-address">Адрес за доставка</label><input id="${p}-address" autocomplete="street-address" placeholder="ул. Граф Игнатиев 10, ет. 3, офис 5" value="${esc(saved.address || '')}"><span class="err" hidden>Напишете адреса с етаж и офис</span></div>
+      </div>
+      <fieldset class="field"><legend>Кога да доставим?</legend>
+        <div class="chips">${slots.map((t, i) => `<label class="chip"><input type="radio" id="${p}-time-${i}" name="${p}-time" value="${esc(t)}" ${i === 0 ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}</div>
+      </fieldset>
+      <div class="field"><label for="${p}-note">Бележка <small>по желание</small></label><textarea id="${p}-note" rows="2" placeholder="Например: без лук, звъннете от входа"></textarea></div>
+      <fieldset class="field"><legend>Плащане при доставка</legend>
+        <div class="chips"><label class="chip"><input type="radio" id="${p}-pay-cash" name="${p}-pay" value="cash" checked><span>В брой</span></label><label class="chip"><input type="radio" id="${p}-pay-card" name="${p}-pay" value="card"><span>С карта</span></label></div>
+      </fieldset>
+      <label class="check"><input type="checkbox" id="${p}-invoice" ${saved.invoice ? 'checked' : ''}> Нужна ми е фактура</label>
+      <div class="field" id="${p}-eik-wrap" ${saved.invoice ? '' : 'hidden'}><label for="${p}-eik">ЕИК на фирмата</label><input id="${p}-eik" inputmode="numeric" value="${esc(saved.eik || '')}"></div>
+    </div>`;
+}
+function wireOrderFields(p) {
+  $(`#${p}-invoice`).addEventListener('change', (e) => { $(`#${p}-eik-wrap`).hidden = !e.target.checked; });
+  $$(`#${p}Fields input`).forEach((i) => i.addEventListener('input', () => { const f = i.closest('.field'); if (!f) return; f.classList.remove('is-bad'); const er = f.querySelector('.err'); if (er) er.hidden = true; }));
+}
+function readOrderFields(p) {
+  const v = (k) => ($(`#${p}-${k}`).value || '').trim();
+  const c = { name: v('name'), phone: v('phone'), company: v('company'), address: v('address'), note: v('note'),
+    time: ($(`input[name="${p}-time"]:checked`) || {}).value || '', invoice: $(`#${p}-invoice`).checked, eik: v('eik') };
+  const pay = ($(`input[name="${p}-pay"]:checked`) || {}).value || 'cash';
+  const bad = [];
+  if (!c.name) bad.push('name');
+  if (c.phone.replace(/\D/g, '').length < 6) bad.push('phone');
+  if (!c.address) bad.push('address');
+  bad.forEach((k) => { const f = $(`#${p}-${k}`).closest('.field'); f.classList.add('is-bad'); const er = f.querySelector('.err'); if (er) er.hidden = false; });
+  if (bad.length) $(`#${p}-${bad[0]}`).focus();
+  return { c, pay, ok: !bad.length };
+}
+const ERRORS = {
+  menu_closed: () => `Менюто за днес още не е публикувано. Обадете се на ${S().phone}.`,
+  ordering_off: () => `В момента не приемаме онлайн поръчки. Обадете се на ${S().phone}.`,
+  too_late: () => `Поръчките за днес приключиха в ${S().order_until}. Обадете се на ${S().phone}, може още да успеем.`,
+  too_many: () => `Получихме няколко поръчки от този телефон за кратко. Ако искате още една, обадете се на ${S().phone}.`,
+  missing_fields: () => 'Попълнете име, телефон и адрес.',
+  empty: () => 'Изберете поне едно ястие.',
+  min_order: () => `Минималната поръчка е ${money(S().min_order)}.`,
+};
+const errText = (e) => { const code = String(e && e.message || e).trim(); return ERRORS[code] ? ERRORS[code]() : `Поръчката не стигна до нас (${code}). Опитайте пак или се обадете на ${S().phone}.`; };
+
+/* checkout */
+function renderCheckoutLines() {
+  const lines = cartLines(), sub = cartSum(), f = fee(sub), st = ordering();
+  $('#coLines').innerHTML = lines.map(({ d, qty }) => `<div class="line" data-dish="${d.id}"><span>${esc(d.name)}${d.portion ? ` <small class="muted">${esc(d.portion)}</small>` : ''}</span>${qtyHtml(d.id, qty, false, d.name)}<span class="line-total">${money(d.price * qty)}</span></div>`).join('');
+  $('#coTotals').innerHTML = `<div><span>Ястия</span><span>${money(sub)}</span></div><div><span>Доставка</span><span>${f ? money(f) : 'безплатна'}</span></div><div class="grand"><span>Общо</span><span>${money(sub + f)}</span></div>`;
+  const min = num(S().min_order), m = $('#coMin');
+  m.hidden = !(min > 0 && sub < min); if (!m.hidden) m.textContent = `Минималната поръчка е ${money(min)}. Добавете още ${money(min - sub)}.`;
+  const fd = $('#coForDay'); fd.hidden = !st.tomorrow; if (st.tomorrow) fd.textContent = `Тази поръчка е за утре, ${dayLabel(st.forDate)}.`;
+  $('#coSend').textContent = `Изпрати поръчката, ${money(sub + f)}`;
+  $('#coSend').disabled = !m.hidden;
+}
+$('#openCheckout').addEventListener('click', () => {
+  $('#coFields').innerHTML = orderFields('co'); wireOrderFields('co');
+  $('#coPhone').textContent = S().phone; $('#coErr').hidden = true;
+  renderCheckoutLines(); openSheet('checkout');
+});
+$('#coLines').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-add]'), m = e.target.closest('[data-dec]');
+  if (a) setQty(a.dataset.add, (state.cart[a.dataset.add] || 0) + 1);
+  if (m) setQty(m.dataset.dec, (state.cart[m.dataset.dec] || 0) - 1);
+});
+$('#coForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const { c, pay, ok } = readOrderFields('co'); if (!ok) return;
+  const btn = $('#coSend'), label = btn.textContent, errBox = $('#coErr'); errBox.hidden = true;
+  btn.disabled = true; btn.textContent = 'Изпращане…';
+  try {
+    const res = await api.placeOrder({ customer: c, items: cartLines().map((l) => ({ id: l.d.id, qty: l.qty })), payment: pay });
+    store.set('dm_customer', { name: c.name, phone: c.phone, company: c.company, address: c.address, invoice: c.invoice, eik: c.eik });
+    store.set('dm_last_order', { id: res.id, no: res.no, for_date: res.for_date });
+    state.cart = {}; saveCart(); closeSheet('checkout'); renderSite();
+    showTracking(res.id, true);
+  } catch (err) {
+    if (String(err.message) === 'unavailable') {
+      const before = Object.keys(state.cart);
+      await refreshData();                                   // (this also drops sold-out dishes from the basket)
+      const names = before.filter((id) => !state.cart[id]).map((id) => (dishById(id) || {}).name).filter(Boolean);
+      saveCart(); renderSite();
+      if (!cartCount()) { closeSheet('checkout'); toast('Ястията, които избрахте, вече ги няма в менюто. Изберете други.', true); return; }
+      renderCheckoutLines();
+      errBox.textContent = `${names.length ? names.join(', ') : 'Едно от ястията'} свърши и го махнахме от поръчката. Проверете и изпратете отново.`;
+    } else errBox.textContent = errText(err);
+    errBox.hidden = false; errBox.scrollIntoView({ block: 'nearest' });
+  } finally { btn.disabled = false; if (btn.textContent === 'Изпращане…') btn.textContent = label; renderCheckoutLines(); }
+});
+
+/* order status for the customer */
+let trackTimer = 0, trackId = null;
+function stopTrackPoll() { clearInterval(trackTimer); trackTimer = 0; }
+async function showTracking(id, fresh) {
+  trackId = id; $('#thBody').innerHTML = '<p class="muted">Проверяваме…</p>';
+  $('#thTitle').textContent = fresh ? 'Поръчката е приета' : 'Вашата поръчка';
+  openSheet('thanks');
+  await paintTracking();
+  stopTrackPoll(); trackTimer = setInterval(paintTracking, 30000);
+}
+async function paintTracking() {
+  if (!trackId) return;
+  let o = null; try { o = await api.track(trackId); } catch (e) {}
+  if (!o) { $('#thBody').innerHTML = `<p class="muted">Не намираме тази поръчка. Обадете се на ${esc(S().phone)}.</p>`; return; }
+  const i = FLOW.indexOf(o.status), s = S();
+  const when = o.for_date > today() ? `утре, ${dayLabel(o.for_date)}` : 'днес';
+  $('#thBody').innerHTML = `
+    <p class="muted">Поръчка</p><p class="big-no num">№${o.no}</p>
+    ${o.status === 'cancelled'
+      ? `<p class="notice is-bad" style="margin-top:14px">Поръчката е отказана.${o.cancel_reason ? ' ' + esc(o.cancel_reason) : ''}</p>`
+      : `<ol class="steps">${FLOW.map((k, j) => `<li class="${j < i || (o.status === 'delivered' && j === i) ? 'done' : j === i ? 'now' : ''}">${STATUS[k].cust}</li>`).join('')}</ol>`}
+    <div class="totals"><div><span>Доставка</span><span>${esc(when)}${o.delivery_time ? ', ' + esc(o.delivery_time) : ''}</span></div><div class="grand"><span>За плащане</span><span>${money(o.total)}</span></div></div>
+    <p class="muted">Ако нещо не е наред, ще ви се обадим. Въпроси: <a class="num" href="${telHref(s.phone)}">${esc(s.phone)}</a>. Тази страница се обновява сама.</p>
+    <button type="button" class="btn btn-wide" data-close style="margin-top:16px">Към менюто</button>`;
+  renderTrackPill(o);
+  if (o.status === 'delivered' || o.status === 'cancelled') stopTrackPoll();
+}
+function renderTrackPill(o) {
+  const last = store.get('dm_last_order', null), pill = $('#trackPill');
+  if (!last || last.for_date < today()) { pill.hidden = true; return; }
+  pill.hidden = false;
+  pill.innerHTML = `<span>Поръчка <b class="num">№${esc(last.no)}</b>${o ? ': ' + esc(STATUS[o.status].cust.toLocaleLowerCase('bg')) : ''}</span><span class="go">Виж</span>`;
+}
+$('#trackPill').addEventListener('click', () => { const last = store.get('dm_last_order', null); if (last) showTracking(last.id, false); });
+
+/* ════════════════════════════════════════════════════════════════
+   4. ADMIN
+   ════════════════════════════════════════════════════════════════ */
+let tab = store.get('dm_tab', 'menu');
+function selectTab(t) {
+  tab = t; store.set('dm_tab', t);
+  $$('#tabs .tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  $$('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== t; });
+  if (t === 'menu') renderAdminMenu();
+  if (t === 'image') renderImage();
+  if (t === 'orders') loadOrders();
+  if (t === 'settings') fillSettings();
+  window.scrollTo({ top: 0 });
+}
+$('#tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) selectTab(b.dataset.tab); });
+
+async function enterAdmin() {
+  $('#site').hidden = true; $('#admin').hidden = false; document.body.classList.add('in-admin');
+  $('#admBrand').textContent = S().name; $('#admDemo').hidden = !api.demo;
+  let ok = false; try { ok = await api.isAdmin(); } catch (e) {}
+  state.admin = ok;
+  $('#signin').hidden = ok; $('#tabs').hidden = !ok;
+  $('#resetDemo').hidden = !api.demo; $('#signOut').hidden = api.demo;
+  if (!ok) { $$('[data-pane]').forEach((p) => { p.hidden = true; }); const s = LIVE && await api.session(); if (s) showSigninErr(`Профилът ${s.user.email} няма права на администратор. В Supabase › SQL Editor изпълнете: update profiles set role = 'admin' where email = '${s.user.email}';`); return; }
+  selectTab(tab); startOrderWatch();
+}
+function leaveAdmin() { $('#admin').hidden = true; $('#site').hidden = false; document.body.classList.remove('in-admin'); stopOrderWatch(); renderSite(); }
+function showSigninErr(t) { const e = $('#signinErr'); e.textContent = t; e.hidden = false; }
+$('#signinForm').addEventListener('submit', async (e) => {
+  e.preventDefault(); $('#signinErr').hidden = true;
+  const btn = $('#signinBtn'); btn.disabled = true;
+  try { await api.signIn($('#si-email').value.trim(), $('#si-pass').value); await enterAdmin(); }
+  catch (err) { showSigninErr(/invalid/i.test(err.message) ? 'Грешен имейл или парола.' : err.message); }
+  finally { btn.disabled = false; }
+});
+$('#signOut').addEventListener('click', async () => { await api.signOut(); state.admin = false; location.hash = ''; });
+
+/* — today's menu — */
+function renderAdminMenu() {
+  const t = today(), tm = tomorrow(), md = state.menuDate;
+  $('#dayPick').innerHTML = [[t, 'Днес'], [tm, 'Утре']].map(([d, l]) => `<button type="button" data-day="${d}" aria-pressed="${md === d}">${l}<small>${esc(dayLabel(d))}</small></button>`).join('');
+  const hint = $('#dayHint'); hint.hidden = true; hint.className = 'notice';
+  if (!md || md < t) { hint.hidden = false; hint.textContent = 'Изберете ден. Дотогава сайтът казва „Менюто за днес идва скоро“ и не приема поръчки.'; }
+  else if (md === t && S().order_until && nowHM() > S().order_until) { hint.hidden = false; hint.textContent = `Вече е след ${S().order_until} и онлайн поръчките за днес са спрени. Изберете „Утре“, за да приемате поръчки за утре.`; }
+  else { hint.hidden = false; hint.className = 'notice is-ok'; hint.textContent = md === t ? `Клиентите поръчват за днес до ${S().order_until}.` : `Клиентите поръчват за утре, ${dayLabel(md)}.`; }
+  renderAdminDishes();
+}
+function renderAdminDishes() {
+  const q = ($('#dishSearch').value || '').trim().toLocaleLowerCase('bg');
+  const all = state.dishes.filter((d) => !q || d.name.toLocaleLowerCase('bg').includes(q));
+  const n = onMenu().length;
+  $('#onCount').textContent = n ? `${plural(n, 'ястие', 'ястия')} в менюто` : 'Менюто е празно — включете ястията за деня';
+  $('#admDishes').innerHTML = groups(all, !q).map((g) => `
+    <div class="adm-cat">
+      <h4>${esc(g.cat)} <small>${g.items.filter((d) => d.available).length} от ${g.items.length}</small></h4>
+      ${g.items.map((d) => `<div class="adm-dish${d.available ? '' : ' off'}">
+          <label class="switch"><input type="checkbox" id="av-${d.id}" data-toggle="${d.id}" ${d.available ? 'checked' : ''} aria-label="${esc(d.name)} в менюто"><span></span></label>
+          <button type="button" class="info" data-edit="${d.id}"><b>${esc(d.name)}</b><span>${[d.portion, money(d.price)].filter(Boolean).map(esc).join(', ')}</span></button>
+          <button type="button" class="btn btn-ghost btn-sm" data-edit="${d.id}" aria-label="Промени ${esc(d.name)}">Промени</button>
+        </div>`).join('')}
+      ${q ? '' : `<button type="button" class="btn btn-sm btn-ghost add-dish" data-new="${esc(g.cat)}">+ Добави в ${esc(g.cat.toLocaleLowerCase('bg'))}</button>`}
+    </div>`).join('') || '<p class="muted">Няма такова ястие.</p>';
+}
+$('#dishSearch').addEventListener('input', renderAdminDishes);
+$('#dayPick').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-day]'); if (!b) return;
+  const d = b.dataset.day;
+  try { await api.setMenuDate(d); state.menuDate = d; loadCart(); renderAdminMenu(); toast(`Менюто е за ${d === today() ? 'днес' : 'утре'}, ${dayLabel(d)}.`); }
+  catch (err) { toast('Денят не се запази: ' + err.message, true); }
+});
+$('#admDishes').addEventListener('change', async (e) => {
+  const box = e.target.closest('[data-toggle]'); if (!box) return;
+  const d = dishById(box.dataset.toggle), on = box.checked;
+  d.available = on; box.closest('.adm-dish').classList.toggle('off', !on);
+  const n = onMenu().length; $('#onCount').textContent = n ? `${plural(n, 'ястие', 'ястия')} в менюто` : 'Менюто е празно — включете ястията за деня';
+  try { await api.setAvailable(d.id, on); }
+  catch (err) { d.available = !on; box.checked = !on; box.closest('.adm-dish').classList.toggle('off', on); toast('Не се запази: ' + err.message, true); }
+});
+$('#admDishes').addEventListener('click', (e) => {
+  const ed = e.target.closest('[data-edit]'); if (ed) openDish(dishById(ed.dataset.edit));
+  const nw = e.target.closest('[data-new]'); if (nw) openDish(null, nw.dataset.new);
+});
+$('#newDish').addEventListener('click', () => openDish(null));
+let clearArmed = 0;
+$('#clearMenu').addEventListener('click', async (e) => {
+  const b = e.currentTarget;
+  if (!clearArmed) { b.textContent = 'Натисни пак, за да изключиш всички'; b.classList.add('btn-danger'); clearArmed = setTimeout(() => { clearArmed = 0; b.textContent = 'Изключи всички'; b.classList.remove('btn-danger'); }, 4000); return; }
+  clearTimeout(clearArmed); clearArmed = 0; b.textContent = 'Изключи всички'; b.classList.remove('btn-danger');
+  try { await api.clearMenu(); state.dishes.forEach((d) => { d.available = false; }); renderAdminDishes(); toast('Всички ястия са изключени. Включете днешните.'); }
+  catch (err) { toast('Не стана: ' + err.message, true); }
+});
+$('#toImage').addEventListener('click', async () => {
+  const t = today(), md = state.menuDate;
+  if (!md || md < t) {
+    const d = S().order_until && nowHM() > S().order_until ? tomorrow() : t;
+    try { await api.setMenuDate(d); state.menuDate = d; toast(`Менюто е публикувано за ${d === t ? 'днес' : 'утре'}, ${dayLabel(d)}.`); } catch (err) { toast(err.message, true); }
+  }
+  if (!onMenu().length) { toast('Първо включете ястията за деня.', true); return; }
+  selectTab('image');
+});
+
+/* dish editor */
+let editing = null, delArmed = 0;
+function openDish(d, cat) {
+  editing = d ? d.id : null;
+  $('#dsTitle').textContent = d ? 'Промени ястие' : 'Ново ястие';
+  const cats = groups(state.dishes, true).map((g) => g.cat);
+  $('#d-cat').innerHTML = cats.map((c) => `<option ${c === ((d && d.category) || cat || 'Основни') ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  $('#d-name').value = d ? d.name : ''; $('#d-portion').value = d ? (d.portion || '') : '';
+  $('#d-price').value = d ? String(d.price).replace('.', ',') : ''; $('#d-desc').value = d ? (d.description || '') : '';
+  $('#d-sort').value = d ? (d.sort || 0) : (state.dishes.filter((x) => x.category === (cat || 'Основни')).length + 1);
+  $('#d-on').checked = d ? !!d.available : true;
+  const del = $('#d-delete'); del.hidden = !d; del.textContent = 'Изтрий'; del.classList.remove('is-armed'); clearTimeout(delArmed); delArmed = 0;
+  $$('#dishForm .field').forEach((f) => f.classList.remove('is-bad'));
+  openSheet('dishSheet');
+}
+$('#dishForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = $('#d-name').value.trim(), priceRaw = $('#d-price').value.trim(), price = num(priceRaw);
+  $('#d-name').closest('.field').classList.toggle('is-bad', !name);
+  $('#d-price').closest('.field').classList.toggle('is-bad', !priceRaw);
+  if (!name || !priceRaw) return;
+  const x = { id: editing || undefined, name, category: $('#d-cat').value, portion: $('#d-portion').value.trim(), price: Math.round(price * 100) / 100,
+    description: $('#d-desc').value.trim(), sort: parseInt($('#d-sort').value, 10) || 0, available: $('#d-on').checked };
+  try {
+    const saved = await api.saveDish(x);
+    const i = state.dishes.findIndex((d) => d.id === saved.id);
+    if (i >= 0) state.dishes[i] = saved; else state.dishes.push(saved);
+    closeSheet('dishSheet'); renderAdminDishes(); toast(`${name} е запазено.`);
+  } catch (err) { toast('Не се запази: ' + err.message, true); }
+});
+$('#d-delete').addEventListener('click', async (e) => {
+  const b = e.currentTarget;
+  if (!delArmed) { b.classList.add('is-armed'); b.textContent = 'Натисни пак, за да изтриеш'; delArmed = setTimeout(() => { delArmed = 0; b.classList.remove('is-armed'); b.textContent = 'Изтрий'; }, 4000); return; }
+  clearTimeout(delArmed); delArmed = 0;
+  try { await api.deleteDish(editing); state.dishes = state.dishes.filter((d) => d.id !== editing); closeSheet('dishSheet'); renderAdminDishes(); toast('Ястието е изтрито.'); }
+  catch (err) { toast('Не се изтри: ' + err.message, true); }
+});
+
+/* — the Viber picture — */
+// "Както досега" redraws the Canva menu the restaurant posts every day (A4 landscape, three columns);
+// "За телефон" is a tall version that reads well in the Viber feed.
+const HEAD = 'Rubik, "Arial Black", sans-serif', HAND = 'Pangolin, "Comic Sans MS", "Segoe Print", sans-serif';
+const DISP = HEAD, BODY = 'Rubik, "Segoe UI", Arial, sans-serif';
+const BRAND = { red: '#8A2023', orange: '#D0882F', pin: '#C9302C', ink: '#141414', text: '#1C1A19', check: 'rgba(222,52,78,0.42)' };
+const IMG_THEMES = { classic: { label: 'Както досега' }, phone: { label: 'За телефон' } };
+let imgTheme = store.get('dm_img_theme2', 'classic'); if (!IMG_THEMES[imgTheme]) imgTheme = 'classic';
+let imgBlob = null, imgUrl = null, imgCanvas = null;
+async function fontsReady() {
+  if (!document.fonts || !document.fonts.load) return;
+  const sample = 'ДНЕВНО МЕНЮ Таратор 0123 €';
+  await Promise.all(['900 92px Rubik', '700 44px Rubik', '500 44px Rubik', '400 32px Rubik', '400 31px Pangolin']
+    .map((f) => document.fonts.load(f, sample).catch(() => {})));
+}
+const loadImg = (src) => new Promise((res) => { if (!src) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+function rng(seed) { let x = seed >>> 0 || 1; return () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; }; }
+const up = (t) => String(t || '').toLocaleUpperCase('bg');
+const ddmmyyyy = (ds) => ds.split('-').reverse().join('.');
+const priceTxt = (p) => (Number(p) || 0).toFixed(2) + '€';
+const itemLine = (d) => `${d.name}${d.portion ? ' ' + d.portion : ''} - ${priceTxt(d.price)}`;
+const menuDay = () => (state.menuDate && state.menuDate >= today() ? state.menuDate : today());
+function wrapText(ctx, text, maxW) {
+  const words = String(text).split(/\s+/), lines = []; let cur = '';
+  words.forEach((w) => { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width <= maxW || !cur) cur = t; else { lines.push(cur); cur = w; } });
+  if (cur) lines.push(cur); return lines;
+}
+function fit(ctx, text, weight, size, family, maxW) {   // shrink a line until it fits (e.g. a long name, or a fallback font)
+  let px = size; ctx.font = `${weight} ${px}px ${family}`;
+  while (px > 20 && ctx.measureText(text).width > maxW) { px -= 4; ctx.font = `${weight} ${px}px ${family}`; }
+  return px;
+}
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function layer(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return [c, c.getContext('2d')]; }
+function fadeIn(ctx, img, x, y, w, h) {          // a photo that melts into the planks on its left and bottom edges
+  const [l, lx] = layer(w, h);
+  const k = Math.max(w / img.width, h / img.height), iw = img.width * k, ih = img.height * k;
+  lx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+  lx.globalCompositeOperation = 'destination-in';
+  const gx = lx.createLinearGradient(0, 0, w * 0.5, 0); gx.addColorStop(0, 'rgba(0,0,0,0)'); gx.addColorStop(1, 'rgba(0,0,0,1)');
+  lx.fillStyle = gx; lx.fillRect(0, 0, w, h);
+  const gy = lx.createLinearGradient(0, h * 0.55, 0, h); gy.addColorStop(0, 'rgba(0,0,0,1)'); gy.addColorStop(1, 'rgba(0,0,0,0)');
+  lx.fillStyle = gy; lx.fillRect(0, 0, w, h);
+  ctx.drawImage(l, x, y);
+}
+function napkin(ctx, x, y, w, h) {               // the red gingham cloth in the bottom-right corner
+  const [p, px] = layer(w * 1.7, h * 1.7), cell = 26;
+  px.fillStyle = '#fff'; px.fillRect(0, 0, p.width, p.height); px.fillStyle = BRAND.check;
+  for (let i = 0; i < p.width; i += cell * 2) px.fillRect(i, 0, cell, p.height);
+  for (let j = 0; j < p.height; j += cell * 2) px.fillRect(0, j, p.width, cell);
+  const [l, lx] = layer(w, h);
+  lx.translate(w / 2, h / 2); lx.rotate(-0.24); lx.drawImage(p, -p.width / 2, -p.height / 2); lx.setTransform(1, 0, 0, 1, 0, 0);
+  lx.globalCompositeOperation = 'destination-in';
+  const g = lx.createRadialGradient(w, h, 0, w, h, Math.hypot(w, h) * 0.8);   // strongest in the corner, fading out like a cloth
+  g.addColorStop(0, 'rgba(0,0,0,0.72)'); g.addColorStop(0.5, 'rgba(0,0,0,0.6)'); g.addColorStop(0.82, 'rgba(0,0,0,0.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  lx.fillStyle = g; lx.fillRect(0, 0, w, h);
+  ctx.drawImage(l, x, y);
+}
+function planks(ctx, W, H, r) {                    // whitewashed wooden boards
+  ctx.fillStyle = '#E6E5E3'; ctx.fillRect(0, 0, W, H);
+  const n = 7, ph = H / n;
+  for (let i = 0; i < n; i++) {
+    const y0 = i * ph, t = 232 + Math.floor(r() * 12);
+    ctx.fillStyle = `rgb(${t},${t},${t - 2})`; ctx.fillRect(0, y0, W, ph);
+    for (let g = 0; g < 110; g++) {
+      const gy = y0 + 4 + r() * (ph - 8), len = 160 + r() * 900, gx = r() * (W + 200) - 200;
+      ctx.strokeStyle = `rgba(110,106,100,${0.025 + r() * 0.06})`; ctx.lineWidth = 0.8 + r() * 1.6;
+      ctx.beginPath(); ctx.moveTo(gx, gy);
+      ctx.bezierCurveTo(gx + len / 3, gy + (r() - 0.5) * 7, gx + 2 * len / 3, gy + (r() - 0.5) * 7, gx + len, gy + (r() - 0.5) * 5); ctx.stroke();
+    }
+    if (i) { ctx.fillStyle = 'rgba(140,136,130,0.35)'; ctx.fillRect(0, y0 - 2, W, 3); ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fillRect(0, y0 + 1, W, 2); }
+    ctx.fillStyle = 'rgba(140,136,130,0.2)'; ctx.fillRect(200 + r() * (W - 400), y0, 3, ph);
+  }
+  const wash = ctx.createRadialGradient(W * 0.4, H * 0.55, 80, W * 0.4, H * 0.55, W * 0.8);
+  wash.addColorStop(0, 'rgba(255,255,255,0.62)'); wash.addColorStop(1, 'rgba(255,255,255,0.15)');
+  ctx.fillStyle = wash; ctx.fillRect(0, 0, W, H);
+}
+function pin(ctx, x, y) {
+  ctx.save(); ctx.fillStyle = BRAND.pin; ctx.beginPath(); ctx.arc(x, y - 30, 15, Math.PI * 0.82, Math.PI * 0.18); ctx.lineTo(x, y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y - 30, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+}
+
+async function drawClassic() {
+  await fontsReady();
+  const s = S(), W = 2000, H = 1414, r = rng(20261012);
+  const [c, ctx] = layer(W, H);
+  const [hl, hx] = layer(W, H), boxes = [];     // headings go on their own layer and get a worn, printed edge at the end
+  function head(text, x, y, size, color, { align = 'left', maxW = 0 } = {}) {
+    let sx = 0.86; hx.font = `900 ${size}px ${HEAD}`;
+    let w = hx.measureText(text).width * sx;
+    if (maxW && w > maxW) {
+      sx = Math.max(0.74, sx * maxW / w); w = hx.measureText(text).width * sx;
+      if (w > maxW) { size = Math.floor(size * maxW / w); hx.font = `900 ${size}px ${HEAD}`; w = hx.measureText(text).width * sx; }
+    }
+    hx.save(); hx.fillStyle = color; hx.textAlign = align; hx.translate(x, y); hx.scale(sx, 1); hx.fillText(text, 0, 0); hx.restore();
+    boxes.push([align === 'center' ? x - w / 2 : x, y - size * 0.78, w, size * 0.82]);
+  }
+
+  planks(ctx, W, H, r);
+  const photo = await loadImg(s.photo);
+  if (photo) fadeIn(ctx, photo, 1150, 0, W - 1150, 830);
+  napkin(ctx, 1240, 860, W - 1240, H - 860);
+  const logo = await loadImg(logoSrc());
+  if (logo) { const lh = 300, lw = logo.width * lh / logo.height; ctx.drawImage(logo, 300 - lw / 2, 22, lw, lh); }
+
+  head('ПОРЪЧАЙ НА ТЕЛ.: ' + s.phone, 667, 103, 40, BRAND.red, { maxW: 640 });
+  if (s.delivery_days) head(up(s.delivery_days), 667, 171, 40, BRAND.orange, { maxW: 720 });
+  head('ДНЕВНО МЕНЮ ' + ddmmyyyy(menuDay()), 684, 299, 92, BRAND.ink, { maxW: 1000 });
+  const addr = up([s.address, s.shop_hours].filter(Boolean).join(' '));
+  if (addr) { pin(ctx, 84, 410); head(addr, 112, 410, 36, BRAND.ink, { maxW: 500 }); }
+
+  // three columns, like the Canva menu: soups + salads, mains + extras, à la minute + desserts
+  const cols = [{ x: 34, w: 560, top: 556, bottom: H - 24, g: [] }, { x: 650, w: 630, top: 513, bottom: H - 24, g: [] }, { x: 1368, w: 600, top: 513, bottom: 1140, g: [] }];
+  const order = S().categories || [], size = (col) => col.g.reduce((n, g) => n + g.items.length + 3, 0);
+  groups(onMenu()).forEach((g) => { const i = order.indexOf(g.cat); (i >= 0 && i < 6 ? cols[Math.floor(i / 2)] : cols.reduce((a, b) => (size(b) < size(a) ? b : a))).g.push(g); });
+  function plan(f) {
+    const lh = f * 1.62; let ok = true;
+    ctx.font = `400 ${f}px ${HAND}`;
+    const out = cols.map((col) => {
+      let y = col.top; const rows = [];
+      col.g.forEach((g, gi) => {
+        if (gi) y += lh * 2.4;
+        rows.push({ head: g.cat, y }); y += lh * 1.1;
+        g.items.forEach((d, di) => wrapText(ctx, itemLine(d), col.w).forEach((ln, li) => { if (di || li) y += lh; rows.push({ text: ln, y }); }));
+      });
+      if (col.g.length && y > col.bottom) ok = false;
+      return rows;
+    });
+    return { ok, out };
+  }
+  let f = 31, L = plan(f);
+  while (!L.ok && f > 16) L = plan(--f);      // a long menu gets smaller letters, as in Canva
+  ctx.font = `400 ${f}px ${HAND}`; ctx.fillStyle = BRAND.text;
+  L.out.forEach((rows, i) => rows.forEach((row) => {
+    if (row.head) head(up(row.head), cols[i].x + cols[i].w / 2, row.y, Math.round(f * 1.42), BRAND.ink, { align: 'center', maxW: cols[i].w });
+    else ctx.fillText(row.text, cols[i].x, row.y);
+  }));
+  if (!onMenu().length) { ctx.font = `400 40px ${HAND}`; ctx.fillStyle = BRAND.text; ctx.fillText('Менюто е празно — включете ястия в раздел „Меню“.', 120, 700); }
+
+  // the stamp
+  const bx = 1304, by = 1180, bw = 672, bh = 220;
+  hx.strokeStyle = BRAND.ink; hx.lineWidth = 8; rr(hx, bx, by, bw, bh, 26); hx.stroke();
+  hx.lineWidth = 3; rr(hx, bx + 14, by + 14, bw - 28, bh - 28, 16); hx.stroke();
+  boxes.push([bx - 6, by - 6, bw + 12, 14], [bx - 6, by + bh - 8, bw + 12, 14], [bx - 6, by, 14, bh], [bx + bw - 8, by, 14, bh]);
+  const sl = String(s.slogan || '').split(/\n|\\n/).map(up).filter(Boolean).slice(0, 2);
+  sl.forEach((t, i) => head(t, bx + bw / 2, by + (sl.length === 1 ? bh / 2 + 18 : 94 + i * 74), 50, BRAND.ink, { align: 'center', maxW: bw - 110 }));
+
+  // worn print: tiny gaps in the black, like the Canva font
+  hx.globalCompositeOperation = 'destination-out';
+  boxes.forEach(([x, y, w, h]) => { const n = Math.round(w * h / 120); for (let i = 0; i < n; i++) { hx.globalAlpha = 0.3 + r() * 0.7; hx.beginPath(); hx.arc(x + r() * w, y + r() * h, 0.5 + r() * 1.6, 0, Math.PI * 2); hx.fill(); } });
+  hx.globalAlpha = 1; hx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(hl, 0, 0);
+  return c;
+}
+
+const PHONE_THEME = { ground: '#FFFFFF', rim: BRAND.red, ink: '#171514', muted: '#615B57', accent: BRAND.red, rule: 'rgba(138,32,35,.28)', lead: '#C9C3BD', band: BRAND.red, bandInk: '#FFFFFF', bandMuted: '#F4D3D1' };
+function footerLines() {
+  const s = S(), terms = [s.delivery_days ? s.delivery_days.replace(/[.!]?$/, '.') : '', `Доставка до дома и офиса.`];
+  if (num(s.free_from) > 0) terms.push(`Безплатна доставка над ${money(s.free_from)}.`);
+  const site = s.website || (LIVE ? location.host : '');
+  return { terms: terms.filter(Boolean).join(' '), site: site ? `Поръчай онлайн: ${site.replace(/^https?:\/\//, '').replace(/\/$/, '')}` : '' };
+}
+async function drawTall() {
+  await fontsReady();
+  const th = PHONE_THEME, s = S(), list = onMenu(), gs = groups(list);
+  const W = 1080, M = 26, RIM = 14, P = 92, CW = W - 2 * P;
+  const k = list.length > 16 ? 0.86 : 1;
+  const F = { name: `500 ${Math.round(42 * k)}px ${BODY}`, portion: `400 ${Math.round(31 * k)}px ${BODY}`, price: `700 ${Math.round(44 * k)}px ${BODY}`,
+    desc: `400 ${Math.round(29 * k)}px ${BODY}`, cat: `900 ${Math.round(50 * k)}px ${DISP}` };
+  const LH = Math.round(54 * k), foot = footerLines(), md = menuDay();
+  const logo = await loadImg(logoSrc());
+  const [c, ctx] = layer(W, 10);
+
+  function pass(draw, H) {
+    const fill = (col) => { ctx.fillStyle = col; };
+    if (draw) { fill(th.ground); ctx.fillRect(0, 0, W, H); }
+    let y = M + 100;
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    const logoW = logo ? 200 : 0;
+    if (draw && logo) { const lh = 200, lw = logo.width * lh / logo.height; ctx.drawImage(logo, W - P - lw + 10, M + 40, lw, lh); }
+    fit(ctx, s.name, 700, 40, BODY, CW - logoW); if (draw) { fill(th.muted); ctx.fillText(s.name, P, y); }
+    y += 150; fit(ctx, 'Обедно меню', 900, 172, DISP, CW - logoW - 20); if (draw) { fill(th.accent); ctx.fillText('Обедно меню', P - 6, y); }
+    y += 72; fit(ctx, cap(dayLabel(md)), 600, 46, BODY, CW); if (draw) { fill(th.ink); ctx.fillText(cap(dayLabel(md)), P, y); }
+    y += 26;
+    gs.forEach((g) => {
+      y += Math.round(92 * k);
+      ctx.font = F.cat; const label = up(g.cat), lw = ctx.measureText(label).width;
+      if (draw) { fill(th.accent); ctx.fillText(label, P, y); ctx.fillStyle = th.rule; ctx.fillRect(P + lw + 24, y - Math.round(20 * k), W - P - (P + lw + 24), 3); }
+      y += Math.round(10 * k);
+      g.items.forEach((d) => {
+        ctx.font = F.price; const pt = money(d.price), prW = ctx.measureText(pt).width;
+        const maxNameW = CW - prW - 56;
+        ctx.font = F.name; const nameLines = wrapText(ctx, d.name, maxNameW);
+        y += Math.round(60 * k);
+        nameLines.forEach((ln, i) => { if (draw) { fill(th.ink); ctx.font = F.name; ctx.fillText(ln, P, y + i * LH); } });
+        let lastY = y + (nameLines.length - 1) * LH;
+        ctx.font = F.name; const lastW = ctx.measureText(nameLines[nameLines.length - 1]).width;
+        let leadFrom = P + lastW + 18;
+        if (d.portion) {
+          ctx.font = F.portion; const pw = ctx.measureText(d.portion).width;
+          if (lastW + 16 + pw <= maxNameW) { if (draw) { fill(th.muted); ctx.fillText(d.portion, P + lastW + 16, lastY); } leadFrom = P + lastW + 16 + pw + 18; }
+          else { lastY += Math.round(42 * k); if (draw) { fill(th.muted); ctx.fillText(d.portion, P, lastY); } leadFrom = P + pw + 18; }
+        }
+        if (draw) {
+          ctx.font = F.price; fill(th.ink); ctx.textAlign = 'right'; ctx.fillText(pt, W - P, lastY); ctx.textAlign = 'left';
+          fill(th.lead); for (let x = leadFrom; x < W - P - prW - 16; x += 15) { ctx.beginPath(); ctx.arc(x, lastY - 9, 2.6, 0, Math.PI * 2); ctx.fill(); }
+        }
+        y = lastY;
+        if (d.description) { ctx.font = F.desc; wrapText(ctx, d.description, maxNameW).forEach((ln) => { y += Math.round(40 * k); if (draw) { fill(th.muted); ctx.fillText(ln, P, y); } }); }
+        y += Math.round(14 * k);
+      });
+    });
+    ctx.font = `600 36px ${BODY}`; const termLines = wrapText(ctx, foot.terms, CW);
+    const bandH = 70 + 34 + 110 + termLines.length * 48 + (foot.site ? 52 : 0) + 64;
+    const Htotal = Math.max(1350, y + 70 + bandH + M);
+    if (draw) {
+      const top = H - M - bandH;
+      ctx.save(); rr(ctx, M, M, W - 2 * M, H - 2 * M, 54); ctx.clip();
+      fill(th.band); ctx.fillRect(0, top, W, H);
+      let fy = top + 70;
+      ctx.font = `600 34px ${BODY}`; fill(th.bandMuted); ctx.fillText('Поръчай на телефон', P, fy);
+      fy += 104; fit(ctx, s.phone, 900, 112, DISP, CW); fill(th.bandInk); ctx.fillText(s.phone, P - 4, fy);
+      ctx.font = `600 36px ${BODY}`; termLines.forEach((ln) => { fy += 48; fill(th.bandInk); ctx.fillText(ln, P, fy); });
+      if (foot.site) { fy += 52; ctx.font = `700 36px ${BODY}`; fill(th.bandMuted); ctx.fillText(foot.site, P, fy); }
+      ctx.restore();
+      ctx.lineWidth = RIM; ctx.strokeStyle = th.rim; rr(ctx, M, M, W - 2 * M, H - 2 * M, 54); ctx.stroke();
+    }
+    return Htotal;
+  }
+  const H = pass(false, 0);
+  c.height = H; pass(true, H);
+  return c;
+}
+function menuText() {
+  const s = S(), out = [`ДНЕВНО МЕНЮ ${ddmmyyyy(menuDay())}`, `${s.name}, поръчай на тел.: ${s.phone}`];
+  if (s.delivery_days) out.push(s.delivery_days);
+  out.push('');
+  groups(onMenu()).forEach((g) => { out.push(up(g.cat)); g.items.forEach((d) => out.push(itemLine(d))); out.push(''); });
+  const addr = [s.address, s.shop_hours].filter(Boolean).join(' '); if (addr) out.push(addr);
+  const site = footerLines().site; if (site) out.push(site);
+  return out.join('\n').trim();
+}
+async function renderImage() {
+  $('#imgTheme').innerHTML = Object.entries(IMG_THEMES).map(([k, t]) => `<button type="button" data-img-theme="${k}" aria-pressed="${k === imgTheme}">${t.label}</button>`).join('');
+  $('#copyFallback').hidden = true;
+  if (!onMenu().length) toast('Менюто е празно. Включете ястия в раздел „Меню“.', true);
+  imgCanvas = imgTheme === 'phone' ? await drawTall() : await drawClassic();
+  imgBlob = await new Promise((res) => imgCanvas.toBlob((b) => res(b), 'image/jpeg', 0.92));
+  if (imgUrl) URL.revokeObjectURL(imgUrl);
+  imgUrl = URL.createObjectURL(imgBlob); $('#menuImg').src = imgUrl; $('#menuImg').alt = `Дневно меню ${ddmmyyyy(menuDay())} като снимка за Viber`;
+  const file = new File([imgBlob], fileName(), { type: 'image/jpeg' });
+  $('#shareImg').hidden = !(navigator.canShare && navigator.canShare({ files: [file] }));
+}
+const fileName = () => `menu-${ddmmyyyy(menuDay())}.jpg`;
+$('#imgTheme').addEventListener('click', (e) => { const b = e.target.closest('[data-img-theme]'); if (!b) return; imgTheme = b.dataset.imgTheme; store.set('dm_img_theme2', imgTheme); renderImage(); });
+$('#shareImg').addEventListener('click', async () => {
+  if (!imgBlob) return;
+  try { await navigator.share({ files: [new File([imgBlob], fileName(), { type: 'image/jpeg' })] }); }
+  catch (e) { if (e.name !== 'AbortError') toast('Споделянето не стана. Свалете снимката и я пуснете в канала.', true); }
+});
+$('#downloadImg').addEventListener('click', () => {
+  if (!imgUrl) return;
+  const a = document.createElement('a'); a.href = imgUrl; a.download = fileName(); document.body.appendChild(a); a.click(); a.remove();
+  toast('Снимката се сваля. Ако не тръгне, натиснете върху нея и изберете „Запази“.');
+});
+$('#copyImg').addEventListener('click', async () => {
+  if (!imgCanvas) return;
+  try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': new Promise((res) => imgCanvas.toBlob(res, 'image/png')) })]); toast('Снимката е копирана. Поставете я в канала с Ctrl+V.'); }
+  catch (e) { toast('Браузърът не позволява копиране на снимки. Свалете я или натиснете върху нея с десния бутон.', true); }
+});
+$('#copyText').addEventListener('click', async () => {
+  const text = menuText();
+  try { await navigator.clipboard.writeText(text); toast('Менюто е копирано като текст.'); }
+  catch (e) { const box = $('#copyFallback'); box.value = text; box.hidden = false; box.focus(); box.select(); toast('Текстът е маркиран отдолу. Копирайте го ръчно.'); }
+});
+
+/* — orders — */
+let ordDate = today(), ordFilter = 'all', ordCache = { [today()]: [], [tomorrow()]: [] };
+const slotRank = (o) => { const i = (S().slots || []).indexOf(o.delivery_time || ''); return i < 0 ? 99 : i; };
+const rank = { new: 0, cooking: 1, on_way: 2, delivered: 3, cancelled: 4 };
+async function fetchOrders() {
+  const [a, b] = await Promise.all([api.orders(today()), api.orders(tomorrow())]);
+  ordCache = { [today()]: a, [tomorrow()]: b };
+  return ordCache;
+}
+async function loadOrders() {
+  try { await fetchOrders(); } catch (e) { $('#ordList').innerHTML = `<p class="notice is-bad">Поръчките не се заредиха: ${esc(e.message)}</p>`; return; }
+  noteSeen(); renderOrders();
+}
+function renderOrders() {
+  if (ordDate !== today() && ordDate !== tomorrow()) ordDate = today();
+  const t = today(), tm = tomorrow();
+  $('#ordDay').innerHTML = [[t, 'Днес'], [tm, 'Утре']].map(([d, l]) => `<button type="button" data-ord-day="${d}" aria-pressed="${ordDate === d}">${l} (${(ordCache[d] || []).length})</button>`).join('');
+  const list = (ordCache[ordDate] || []).slice().sort((a, b) => rank[a.status] - rank[b.status] || slotRank(a) - slotRank(b) || a.created_at.localeCompare(b.created_at));
+  const live = list.filter((o) => o.status !== 'cancelled');
+
+  // kitchen: how many portions of each dish
+  const tally = {}; live.forEach((o) => (o.order_items || []).forEach((it) => { tally[it.name] = (tally[it.name] || 0) + it.qty; }));
+  const rows = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+  const portions = rows.reduce((s, r) => s + r[1], 0), sum = live.reduce((s, o) => s + Number(o.total || 0), 0);
+  $('#kitchen').innerHTML = `<div class="row"><h3 class="grow">За кухнята</h3><span class="muted">${plural(live.length, 'поръчка', 'поръчки')}, ${plural(portions, 'порция', 'порции')}, ${money(sum)}</span></div>
+    ${rows.length ? `<ul>${rows.map(([n, q]) => `<li><b>${q}</b><span>${esc(n)}</span></li>`).join('')}</ul>` : '<p class="muted">Още няма поръчки за този ден.</p>'}`;
+
+  // drivers
+  const cars = [...(S().cars || []), ''];
+  $('#cars').innerHTML = cars.map((car) => {
+    const mine = live.filter((o) => (o.car || '') === car && o.status !== 'delivered');
+    if (!car && !mine.length) return '';
+    return `<div class="car-row"><b>${esc(car || 'Без кола')}</b><span class="muted">${mine.length ? `${plural(mine.length, 'адрес', 'адреса')}, ${money(mine.reduce((s, o) => s + Number(o.total || 0), 0))}` : 'няма адреси'}</span>
+      ${car && mine.length ? `<button type="button" class="btn btn-sm" data-copy-car="${esc(car)}">Копирай за шофьора</button>` : ''}</div>`;
+  }).join('');
+
+  const counts = { all: list.length }; Object.keys(STATUS).forEach((k) => { counts[k] = list.filter((o) => o.status === k).length; });
+  const FL = { all: 'Всички', new: 'Нови', cooking: 'Готвим', on_way: 'На път', delivered: 'Доставени', cancelled: 'Отказани' };
+  $('#filters').innerHTML = Object.entries(FL)
+    .map(([k, l]) => `<label class="chip"><input type="radio" name="ord-filter" id="f-${k}" value="${k}" ${ordFilter === k ? 'checked' : ''}><span>${l} (${counts[k]})</span></label>`).join('');
+  const shown = list.filter((o) => ordFilter === 'all' || o.status === ordFilter);
+  $('#ordList').innerHTML = shown.length ? shown.map(orderCard).join('') : `<p class="muted" style="padding:12px 0">${ordFilter === 'all' ? 'Още няма поръчки. Новите идват тук сами, със звук, ако е включен.' : 'Няма поръчки с този статус.'}</p>`;
+}
+const REASONS = ['Ястието свърши', 'Не доставяме до този адрес', 'Не успяхме да се свържем с вас', 'По ваша молба'];
+function orderCard(o) {
+  const items = o.order_items || [], cancelled = o.status === 'cancelled';
+  const cars = S().cars || [];
+  return `<article class="order st-${o.status}" data-order="${o.id}">
+    <div class="order-top"><span class="order-no num">№${o.no}</span><span class="pill st-${o.status}">${STATUS[o.status].admin}</span>
+      <span class="when">${esc(o.delivery_time || 'Възможно най-скоро')}</span>
+      <span class="muted">поръчана ${clock(o.created_at)}${o.source === 'phone' ? ', по телефона' : ', от сайта'}</span></div>
+    <div class="order-who"><b>${esc(o.company || o.customer_name)}</b>${o.company ? `, ${esc(o.customer_name)}` : ''}, <a class="num" href="${telHref(o.customer_phone)}">${esc(o.customer_phone)}</a></div>
+    <div>${esc(o.delivery_address)}</div>
+    <ul class="order-items">${items.map((it) => `<li><span>${it.qty} × ${esc(it.name)}</span><span>${money(it.price * it.qty)}</span></li>`).join('')}</ul>
+    <div class="order-sum"><span>Общо ${money(o.total)}</span><span class="muted">${o.payment_method === 'card' ? 'с карта' : 'в брой'}${Number(o.delivery_fee) > 0 ? `, с доставка ${money(o.delivery_fee)}` : ''}</span>${o.invoice ? `<span>Фактура${o.eik ? ', ЕИК ' + esc(o.eik) : ''}</span>` : ''}</div>
+    ${o.delivery_note ? `<p class="order-note">${esc(o.delivery_note)}</p>` : ''}
+    ${cancelled ? `<p class="order-cancel-why">Отказана${o.cancel_reason ? ': ' + esc(o.cancel_reason) : ''}</p>
+      <div class="order-actions"><button type="button" class="btn btn-sm" data-restore>Върни поръчката</button><button type="button" class="btn btn-sm btn-ghost btn-danger" data-del>Изтрий</button></div>`
+    : `<div class="flow" role="group" aria-label="Статус">${FLOW.map((k) => `<button type="button" data-status="${k}" aria-pressed="${o.status === k}">${STATUS[k].admin}</button>`).join('')}</div>
+      <div class="order-actions">
+        <label class="small muted" for="car-${o.id}">Кола</label>
+        <select id="car-${o.id}" data-car><option value="">—</option>${cars.map((c) => `<option ${o.car === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}${o.car && !cars.includes(o.car) ? `<option selected>${esc(o.car)}</option>` : ''}</select>
+        <button type="button" class="btn btn-sm btn-ghost" data-cancel>Откажи</button>
+        <button type="button" class="btn btn-sm btn-ghost btn-danger" data-del>Изтрий</button>
+      </div>
+      <div class="cancel-form" hidden>
+        <label for="why-${o.id}"><b>Защо отказвате?</b> <span class="small">Клиентът вижда причината, ако следи поръчката.</span></label>
+        <div class="chips">${REASONS.map((r) => `<button type="button" data-reason>${esc(r)}</button>`).join('')}</div>
+        <textarea id="why-${o.id}" rows="2" data-why placeholder="Напишете причината"></textarea>
+        <div class="order-actions"><button type="button" class="btn btn-sm btn-primary" data-cancel-go>Откажи поръчката</button><button type="button" class="btn btn-sm btn-ghost" data-cancel-back>Назад</button></div>
+      </div>`}
+  </article>`;
+}
+function findOrder(id) { return Object.values(ordCache).flat().find((o) => o.id === id); }
+async function patchOrder(id, patch, okMsg) {
+  const o = findOrder(id), before = { ...o };
+  Object.assign(o, patch); renderOrders(); refreshBadge();
+  try { await api.updateOrder(id, patch); if (okMsg) toast(okMsg); }
+  catch (err) { Object.assign(o, before); renderOrders(); toast('Не се запази: ' + err.message, true); }
+}
+$('#ordDay').addEventListener('click', (e) => { const b = e.target.closest('[data-ord-day]'); if (b) { ordDate = b.dataset.ordDay; renderOrders(); } });
+$('#filters').addEventListener('change', (e) => { ordFilter = e.target.value; renderOrders(); });
+$('#ordList').addEventListener('change', (e) => { const sel = e.target.closest('[data-car]'); if (sel) { const id = sel.closest('[data-order]').dataset.order; patchOrder(id, { car: sel.value || null }, sel.value ? `№${findOrder(id).no} е в ${sel.value}.` : null); } });
+const delTimers = {};
+$('#ordList').addEventListener('click', async (e) => {
+  const card = e.target.closest('[data-order]'); if (!card) return;
+  const id = card.dataset.order, o = findOrder(id);
+  const st = e.target.closest('[data-status]');
+  if (st) { const s = st.dataset.status; if (s !== o.status) patchOrder(id, { status: s }, `№${o.no}: ${STATUS[s].admin.toLocaleLowerCase('bg')}`); return; }
+  if (e.target.closest('[data-cancel]')) { $('.cancel-form', card).hidden = false; $('[data-why]', card).focus(); return; }
+  if (e.target.closest('[data-cancel-back]')) { $('.cancel-form', card).hidden = true; return; }
+  const r = e.target.closest('[data-reason]'); if (r) { $('[data-why]', card).value = r.textContent; return; }
+  if (e.target.closest('[data-cancel-go]')) { patchOrder(id, { status: 'cancelled', cancel_reason: $('[data-why]', card).value.trim() || null, cancelled_at: new Date().toISOString() }, `№${o.no} е отказана.`); return; }
+  if (e.target.closest('[data-restore]')) { patchOrder(id, { status: 'new', cancel_reason: null, cancelled_at: null }, `№${o.no} е върната.`); return; }
+  const del = e.target.closest('[data-del]');
+  if (del) {
+    if (!delTimers[id]) { del.classList.add('is-armed'); del.textContent = 'Натисни пак'; delTimers[id] = setTimeout(() => { delete delTimers[id]; del.classList.remove('is-armed'); del.textContent = 'Изтрий'; }, 4000); return; }
+    clearTimeout(delTimers[id]); delete delTimers[id];
+    try { await api.removeOrder(id); Object.keys(ordCache).forEach((d) => { ordCache[d] = ordCache[d].filter((x) => x.id !== id); }); renderOrders(); refreshBadge(); toast(`№${o.no} е изтрита.`); }
+    catch (err) { toast('Не се изтри: ' + err.message, true); }
+  }
+});
+$('#cars').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-copy-car]'); if (!b) return;
+  const car = b.dataset.copyCar;
+  const mine = (ordCache[ordDate] || []).filter((o) => o.car === car && !['delivered', 'cancelled'].includes(o.status)).sort((a, c) => slotRank(a) - slotRank(c));
+  const text = [`${car}, ${dayLabel(ordDate)}: ${plural(mine.length, 'адрес', 'адреса')}`, '',
+    ...mine.map((o, i) => [
+      `${i + 1}) №${o.no}, ${o.delivery_time || 'възможно най-скоро'}`,
+      [o.company, o.customer_name].filter(Boolean).join(', '),
+      o.delivery_address, `тел. ${o.customer_phone}`,
+      (o.order_items || []).map((it) => `${it.qty} × ${it.name}`).join(', '),
+      `Да вземе: ${money(o.total)} ${o.payment_method === 'card' ? '(карта)' : '(в брой)'}${o.invoice ? ', фактура' : ''}`,
+      ...(o.delivery_note ? [`Бележка: ${o.delivery_note}`] : []), ''].join('\n'))].join('\n');
+  try { await navigator.clipboard.writeText(text); toast(`Списъкът за ${car} е копиран. Пратете го на шофьора във Viber.`); }
+  catch (err) { const box = document.createElement('textarea'); box.className = 'copy-box'; box.value = text; box.readOnly = true; b.closest('.car-row').after(box); box.select(); toast('Текстът е маркиран отдолу. Копирайте го ръчно.'); }
+});
+
+/* new-order watch: badge, toast and a sound */
+let watchTimer = 0, seen = new Set(store.get('dm_seen', [])), soundOn = store.get('dm_sound', false), audio = null;
+function noteSeen() { Object.values(ordCache).flat().forEach((o) => seen.add(o.id)); store.set('dm_seen', [...seen].slice(-400)); refreshBadge(); }
+function refreshBadge() {
+  const n = Object.values(ordCache).flat().filter((o) => o.status === 'new').length, b = $('#ordBadge');
+  b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n);
+  document.title = (n ? `(${n}) ` : '') + S().name + ' — администрация';
+}
+async function checkNew() {
+  if (!state.admin || document.visibilityState === 'hidden') return;
+  try { await fetchOrders(); } catch (e) { return; }
+  const fresh = Object.values(ordCache).flat().filter((o) => !seen.has(o.id));
+  fresh.slice(0, 3).forEach((o) => toast(`Нова поръчка №${o.no}: ${money(o.total)}, ${o.company || o.customer_name}`));
+  if (fresh.length) beep();
+  noteSeen(); if (tab === 'orders') renderOrders();
+}
+function startOrderWatch() { stopOrderWatch(); fetchOrders().then(() => { noteSeen(); }).catch(() => {}); watchTimer = setInterval(checkNew, 20000); paintSound(); }
+function stopOrderWatch() { clearInterval(watchTimer); watchTimer = 0; }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { if (state.admin && !$('#admin').hidden) checkNew(); else if (state.loaded) refreshData().then(renderSite); } });
+function paintSound() { const b = $('#soundBtn'); b.textContent = soundOn ? 'Звук: включен' : 'Звук: изключен'; b.setAttribute('aria-pressed', String(soundOn)); }
+function beep() {
+  if (!soundOn) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume();
+    const t = audio.currentTime;
+    [[880, 0], [1175, 0.2], [880, 0.6], [1175, 0.8]].forEach(([f, dt]) => {
+      const o = audio.createOscillator(), g = audio.createGain(); o.frequency.value = f; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(0.0001, t + dt); g.gain.exponentialRampToValueAtTime(0.35, t + dt + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.18);
+      o.start(t + dt); o.stop(t + dt + 0.2);
+    });
+  } catch (e) {}
+}
+$('#soundBtn').addEventListener('click', () => { soundOn = !soundOn; store.set('dm_sound', soundOn); paintSound(); if (soundOn) { beep(); toast('Звукът е включен. Оставете страницата отворена.'); } });
+
+/* phone orders */
+let poCart = {};
+function renderPick() {
+  const list = onMenu();
+  $('#poPick').innerHTML = list.length ? groups(list).map((g) => `<div class="cat"><h3 class="cat-name">${esc(g.cat)}</h3>${g.items.map((d) => dishRow(d, poCart[d.id] || 0, false)).join('')}</div>`).join('') : '<p class="muted" style="padding:10px 0">Менюто е празно. Включете ястия в раздел „Меню“.</p>';
+  const sub = Object.entries(poCart).reduce((s, [id, q]) => s + (dishById(id) ? dishById(id).price * q : 0), 0), f = sub ? fee(sub) : 0;
+  $('#poTotals').innerHTML = `<div><span>Ястия</span><span>${money(sub)}</span></div><div><span>Доставка</span><span>${f ? money(f) : '—'}</span></div><div class="grand"><span>Общо</span><span>${money(sub + f)}</span></div>`;
+}
+$('#phoneOrder').addEventListener('click', () => {
+  poCart = {}; $('#poFields').innerHTML = orderFields('po'); wireOrderFields('po'); $('#poErr').hidden = true;
+  const md = state.menuDate;
+  $('#poTitle').textContent = md && md > today() ? 'Поръчка по телефона за утре' : 'Поръчка по телефона';
+  renderPick(); openSheet('phoneSheet');
+});
+$('#poPick').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-add]'), m = e.target.closest('[data-dec]');
+  if (a) poCart[a.dataset.add] = (poCart[a.dataset.add] || 0) + 1;
+  if (m) { poCart[m.dataset.dec] = (poCart[m.dataset.dec] || 0) - 1; if (poCart[m.dataset.dec] <= 0) delete poCart[m.dataset.dec]; }
+  if (a || m) renderPick();
+});
+$('#poForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('#poErr'); err.hidden = true;
+  const items = Object.entries(poCart).map(([id, qty]) => ({ id, qty }));
+  if (!items.length) { err.textContent = 'Изберете ястията горе.'; err.hidden = false; $('#poPick').scrollIntoView({ block: 'nearest' }); return; }
+  const { c, pay, ok } = readOrderFields('po'); if (!ok) return;
+  const btn = $('#poSend'); btn.disabled = true;
+  try {
+    const res = await api.placeOrder({ customer: c, items, payment: pay, source: 'phone' }, true);
+    closeSheet('phoneSheet'); toast(`Поръчка №${res.no} е записана.`);
+    ordDate = res.for_date; await loadOrders();
+  } catch (x) { err.textContent = String(x.message) === 'unavailable' ? 'Едно от ястията вече не е в менюто.' : errText(x); err.hidden = false; }
+  finally { btn.disabled = false; }
+});
+
+/* settings */
+function fillSettings() {
+  const s = S(), set = (id, v) => { $('#' + id).value = v == null ? '' : v; };
+  set('s-name', s.name); set('s-phone', s.phone); set('s-tagline', s.tagline); set('s-website', s.website); set('s-viber', s.viber); set('s-area', s.area);
+  $('#s-ordering').checked = s.ordering_on !== false; set('s-until', s.order_until);
+  set('s-min', String(num(s.min_order)).replace('.', ',')); set('s-fee', String(num(s.delivery_fee)).replace('.', ',')); set('s-free', String(num(s.free_from)).replace('.', ','));
+  set('s-slots', (s.slots || []).join('\n')); set('s-cars', (s.cars || []).join('\n')); set('s-cats', (s.categories || []).join('\n'));
+  set('s-address', s.address); set('s-shophours', s.shop_hours); set('s-days', s.delivery_days); set('s-slogan', String(s.slogan || '').replace(/\\n/g, '\n'));
+  pendingLogo = undefined; pendingPhoto = undefined; paintPics();
+}
+let pendingLogo, pendingPhoto;     // undefined = unchanged, '' = removed, data URL = new picture
+function paintPics() {
+  const logo = pendingLogo !== undefined ? pendingLogo : S().logo, photo = pendingPhoto !== undefined ? pendingPhoto : S().photo;
+  $('#s-logo-img').src = logo || DEFAULT_LOGO;
+  $('#s-photo-img').hidden = !photo; $('#s-photo-none').hidden = !!photo; if (photo) $('#s-photo-img').src = photo;
+}
+function shrink(file, max, type) {   // keep pictures small: they are stored with the settings
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => { const img = new Image(); img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)), [c, x] = layer(img.width * k, img.height * k);
+      x.drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL(type, 0.86));
+    }; img.onerror = () => rej(new Error('Това не е снимка.')); img.src = fr.result; };
+    fr.onerror = () => rej(fr.error); fr.readAsDataURL(file);
+  });
+}
+$('#s-logo').addEventListener('change', async (e) => { const f = e.target.files[0]; if (!f) return; try { pendingLogo = await shrink(f, 700, 'image/png'); paintPics(); toast('Логото е готово. Натиснете „Запази настройките“.'); } catch (x) { toast(x.message, true); } e.target.value = ''; });
+$('#s-photo').addEventListener('change', async (e) => { const f = e.target.files[0]; if (!f) return; try { pendingPhoto = await shrink(f, 1100, 'image/jpeg'); paintPics(); toast('Снимката е готова. Натиснете „Запази настройките“.'); } catch (x) { toast(x.message, true); } e.target.value = ''; });
+$('#s-logo-reset').addEventListener('click', () => { pendingLogo = ''; paintPics(); });
+$('#s-photo-clear').addEventListener('click', () => { pendingPhoto = ''; paintPics(); });
+$('#settingsForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const v = (id) => $('#' + id).value.trim(), lines = (id) => v(id).split('\n').map((x) => x.trim()).filter(Boolean);
+  const data = { ...S(), name: v('s-name') || DEFAULTS.name, phone: v('s-phone'), tagline: v('s-tagline'), website: v('s-website'), viber: v('s-viber'), area: v('s-area'),
+    ordering_on: $('#s-ordering').checked, order_until: v('s-until') || '14:00', min_order: num(v('s-min')), delivery_fee: num(v('s-fee')), free_from: num(v('s-free')),
+    slots: lines('s-slots'), cars: lines('s-cars'), categories: lines('s-cats'),
+    address: v('s-address'), shop_hours: v('s-shophours'), delivery_days: v('s-days'), slogan: $('#s-slogan').value.trim(),
+    logo: pendingLogo !== undefined ? pendingLogo : (S().logo || ''), photo: pendingPhoto !== undefined ? pendingPhoto : (S().photo || '') };
+  if (!data.phone) { toast('Телефонът за поръчки е задължителен: показва се навсякъде.', true); $('#s-phone').focus(); return; }
+  if (!data.slots.length) data.slots = ['Възможно най-скоро'];
+  try { await api.saveSettings(data); state.settings = data; pendingLogo = undefined; pendingPhoto = undefined; $('#admBrand').textContent = data.name; refreshBadge(); toast('Настройките са запазени.'); }
+  catch (err) { toast('Не се запазиха: ' + err.message, true); }
+});
+$('#resetDemo').addEventListener('click', async () => { api.reset(); seen = new Set(); store.del('dm_seen'); store.del('dm_last_order'); await refreshData(); fillSettings(); toast('Демото започва отначало с примерни ястия и поръчки.'); startOrderWatch(); });
+
+/* ════════════════════════════════════════════════════════════════
+   5. START
+   ════════════════════════════════════════════════════════════════ */
+async function refreshData() {
+  const d = await api.load();
+  state.settings = d.settings; state.menuDate = d.menuDate; state.dishes = d.dishes; state.loaded = true;
+  loadCart();
+}
+function route() {
+  $$('.sheet:not([hidden])').forEach((el) => closeSheet(el.id));
+  if (location.hash === '#admin') enterAdmin(); else leaveAdmin();
+}
+window.addEventListener('hashchange', route);
+(async function start() {
+  try { await refreshData(); }
+  catch (e) { state.loaded = false; $('#menuTitle').textContent = 'Менюто не се зареди'; $('#menuNote').textContent = `Проверете връзката и опреснете страницата, или се обадете на ${S().phone}. (${e.message})`; }
+  const last = store.get('dm_last_order', null);
+  if (last && last.for_date >= today()) { renderTrackPill(null); api.track(last.id).then(renderTrackPill).catch(() => {}); }
+  route();
+  if (LIVE) sb.auth.onAuthStateChange((ev) => { if ((ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') && location.hash === '#admin') enterAdmin(); });
+})();
+})();
+</script>
+</body>
+</html>
