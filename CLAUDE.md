@@ -1,0 +1,43 @@
+# Bahar Foods — how this repo is worked on
+
+The owner (petarnikolov1) builds this site only by prompting Claude. Claude makes the change, tests it,
+puts it live, and asks before touching the database.
+
+## What lives where
+- `index.html` — the whole site: customer menu and ordering, and the staff area at `/#admin`
+  (inline CSS and JS, the logo embedded as base64, about 190 KB). Customer texts are in Bulgarian.
+- `supabase/migrations/NNN_name.sql` — every database change, numbered in the order it was applied.
+- Live site: Cloudflare Pages, connected to this repo. Every push to `main` redeploys it in a minute or two.
+  Address: SITE_ADDRESS
+- Database: Supabase project "Bahar Foods" (ref `PROJECT_REF`) in the organization "Bahar Foods", region eu-central-1.
+  Claude reaches it only through the Supabase connector (`mcp__Supabase__*`); the shell cannot reach supabase.co.
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY` near the top of the script in `index.html` hold the project URL and the
+  publishable key. Both are public by design.
+
+## Every change
+1. **Make and test it.** Page changes: run the page in headless Chrome (Playwright) at phone and desktop width;
+   demo mode (empty keys) runs fully in the browser, so test there. SQL: on a fresh local Postgres, run every file
+   in `supabase/migrations` in order, then the new one; re-run it to be sure it is safe twice.
+2. **Database change?** Write `supabase/migrations/<next number>_<snake_name>.sql`. Tell the owner in plain words
+   what it changes and ask with AskUserQuestion ("Apply to the database" / "Not yet"). Only after a yes:
+   `apply_migration` with name = the file name without `.sql`, then `get_advisors` (security) and fix anything new.
+   Apply the database part **before** pushing the site that needs it. Keep changes compatible with the site that is
+   live right now: add, don't rename or drop; drop old things in a later migration once nothing uses them.
+3. **Put it live straight away** (the owner chose this): commit on `main` with a short plain-English message,
+   `git fetch origin main`, rebase if `main` moved, `git push origin HEAD:main`. Never force-push.
+4. **Check it:** `git ls-remote origin main` equals `git rev-parse HEAD`; a couple of minutes later fetch the live
+   site and confirm the change is there.
+5. **Report** in one or two lines with the commit link `https://github.com/petarnikolov1/BaharFoods/commit/<sha>`.
+
+## Never
+- Never commit emails, passwords, the database password, the secret/service-role key, or Telegram tokens.
+  **The repo is public.**
+- Staff logins: add an email with `execute_sql`:
+  `insert into public.admin_emails (email) values ('…') on conflict do nothing;` (delete the row to remove someone).
+  The person creates their own login in Supabase › Authentication › Users › Add user (tick "Auto Confirm User").
+  Never put staff emails in a migration file.
+- Dishes, prices, today's menu, settings, logo and orders are the restaurant's live data, changed in the admin.
+  Don't overwrite them from migrations, and never delete orders or dishes in bulk unless the owner says so.
+
+## What has been applied
+Compare `list_migrations` on the project with the files in `supabase/migrations`.

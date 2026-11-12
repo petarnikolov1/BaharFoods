@@ -566,15 +566,16 @@ body.in-admin::before{ background:var(--plate); }
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script>
 (() => {
 'use strict';
 
 /* ════════════════════════════════════════════════════════════════
-   1. CONNECTION — paste your Supabase project's URL and anon key
-      (Supabase › Project Settings › API). Leave both empty for the demo,
-      which keeps everything in the browser.
+   1. CONNECTION — the Supabase project "Bahar Foods". The URL and the publishable
+      key are meant to be public; row level security in the database decides what
+      anyone can read or change. Leave both empty for the demo, which keeps
+      everything in the browser.
    ════════════════════════════════════════════════════════════════ */
 const SUPABASE_URL = '';
 const SUPABASE_ANON_KEY = '';
