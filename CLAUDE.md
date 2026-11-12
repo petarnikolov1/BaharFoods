@@ -13,6 +13,8 @@ puts it live, and asks before touching the database.
   Address: https://baharfoods.95cwm7hk47.workers.dev (staff: add `#admin`). The shell can't reach it; check it with WebFetch.
 - Database: Supabase project ref `nflhpskibjwpgnufnbod` (https://nflhpskibjwpgnufnbod.supabase.co).
   Claude reaches it only through the Supabase connector (`mcp__Supabase__*`); the shell cannot reach supabase.co.
+  The connector reaches one Supabase organization at a time. If `get_project` says "You do not have permission",
+  ask the owner to reconnect it (claude.ai › Settings › Connectors › Supabase) and pick the Bahar Foods organization.
 - `SUPABASE_URL` / `SUPABASE_ANON_KEY` near the top of the script in `public/index.html` hold the project URL and the
   publishable key. Both are public by design.
 
@@ -41,6 +43,12 @@ puts it live, and asks before touching the database.
   Never put staff emails in a migration file.
 - Dishes, prices, today's menu, settings, logo and orders are the restaurant's live data, changed in the admin.
   Don't overwrite them from migrations, and never delete orders or dishes in bulk unless the owner says so.
+
+## Security report: expected findings
+`get_advisors` (security) always lists these on purpose; don't "fix" them:
+- `place_order` and `track_order` callable without signing in: they are how customers order and follow an order.
+- `is_admin` callable: the row level security rules call it for every visitor; it only says whether the caller is staff.
+- `admin_emails` and `private_config` have row level security with no policies: nobody outside the database may read them.
 
 ## What has been applied
 Compare `list_migrations` on the project with the files in `supabase/migrations`.

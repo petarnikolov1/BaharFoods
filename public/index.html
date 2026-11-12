@@ -577,8 +577,8 @@ body.in-admin::before{ background:var(--plate); }
       anyone can read or change. Leave both empty for the demo, which keeps
       everything in the browser.
    ════════════════════════════════════════════════════════════════ */
-const SUPABASE_URL = '';
-const SUPABASE_ANON_KEY = '';
+const SUPABASE_URL = 'https://nflhpskibjwpgnufnbod.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_0a2IGd8CE9M2LibKZQ2fsQ_WCcPOEDA';
 
 const LIVE = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
 const sb = LIVE ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;

@@ -160,7 +160,8 @@ drop policy if exists "admins manage order items" on public.order_items;
 create policy "admins manage order items" on public.order_items for all using (public.is_admin()) with check (public.is_admin());
 
 -- ───────────────────────── 5. Optional: every new order on your phone through Telegram ─────────────────────────
--- Fill these two in SETUP.md step 6 (the website can never read this table).
+-- Claude fills the bot token and chat id with execute_sql when the owner wants alerts; never in a file
+-- (the website can never read this table).
 create table if not exists public.private_config (key text primary key, value text);
 alter table public.private_config enable row level security;
 do $$ begin
