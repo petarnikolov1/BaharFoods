@@ -4,14 +4,16 @@ The owner (petarnikolov1) builds this site only by prompting Claude. Claude make
 puts it live, and asks before touching the database.
 
 ## What lives where
-- `index.html` — the whole site: customer menu and ordering, and the staff area at `/#admin`
+- `public/index.html` — the whole site: customer menu and ordering, and the staff area at `/#admin`
   (inline CSS and JS, the logo embedded as base64, about 190 KB). Customer texts are in Bulgarian.
 - `supabase/migrations/NNN_name.sql` — every database change, numbered in the order it was applied.
-- Live site: Cloudflare Pages, connected to this repo. Every push to `main` redeploys it in a minute or two.
-  Address: SITE_ADDRESS
-- Database: Supabase project "Bahar Foods" (ref `PROJECT_REF`) in the organization "Bahar Foods", region eu-central-1.
+- `wrangler.jsonc` — tells Cloudflare to publish only `public/` (never the notes or the SQL).
+- Live site: Cloudflare Worker `baharfoods` (Workers Builds, connected to this repo). Every push to `main`
+  redeploys it in a minute or two, and Cloudflare posts a check run on the commit.
+  Address: https://baharfoods.95cwm7hk47.workers.dev (staff: add `#admin`). The shell can't reach it; check it with WebFetch.
+- Database: Supabase project ref `nflhpskibjwpgnufnbod` (https://nflhpskibjwpgnufnbod.supabase.co).
   Claude reaches it only through the Supabase connector (`mcp__Supabase__*`); the shell cannot reach supabase.co.
-- `SUPABASE_URL` / `SUPABASE_ANON_KEY` near the top of the script in `index.html` hold the project URL and the
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY` near the top of the script in `public/index.html` hold the project URL and the
   publishable key. Both are public by design.
 
 ## Every change
@@ -25,8 +27,9 @@ puts it live, and asks before touching the database.
    live right now: add, don't rename or drop; drop old things in a later migration once nothing uses them.
 3. **Put it live straight away** (the owner chose this): commit on `main` with a short plain-English message,
    `git fetch origin main`, rebase if `main` moved, `git push origin HEAD:main`. Never force-push.
-4. **Check it:** `git ls-remote origin main` equals `git rev-parse HEAD`; a couple of minutes later fetch the live
-   site and confirm the change is there.
+4. **Check it:** `git ls-remote origin main` equals `git rev-parse HEAD`; then the Cloudflare check run on the commit
+   (`gh api repos/petarnikolov1/BaharFoods/commits/<sha>/check-runs`) should succeed, and WebFetch of the live
+   site should show the change.
 5. **Report** in one or two lines with the commit link `https://github.com/petarnikolov1/BaharFoods/commit/<sha>`.
 
 ## Never

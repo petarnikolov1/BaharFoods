@@ -18,5 +18,5 @@ Online orders stop at the cut-off (14:30 by default) and the site shows the phon
 If no day is picked, the site says the menu is coming soon and takes no orders.
 
 ## How it's built
-`index.html` is the whole site, hosted on Cloudflare Pages from this repo. The data lives in Supabase; every
+`public/index.html` is the whole site, hosted on Cloudflare (Worker `baharfoods`, see `wrangler.jsonc`) from this repo. The data lives in Supabase; every
 database change is in `supabase/migrations`. Changes are made by asking Claude: see `CLAUDE.md`.

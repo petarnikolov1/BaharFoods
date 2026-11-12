@@ -1,0 +1,8 @@
+// Cloudflare Worker "baharfoods": serves only the files in public/ (the site), never the repo notes or SQL.
+{
+  "name": "baharfoods",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public"
+  }
+}
