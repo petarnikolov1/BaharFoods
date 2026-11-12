@@ -29,9 +29,10 @@ puts it live, and asks before touching the database.
    live right now: add, don't rename or drop; drop old things in a later migration once nothing uses them.
 3. **Put it live straight away** (the owner chose this): commit on `main` with a short plain-English message,
    `git fetch origin main`, rebase if `main` moved, `git push origin HEAD:main`. Never force-push.
-4. **Check it:** `git ls-remote origin main` equals `git rev-parse HEAD`; then the Cloudflare check run on the commit
-   (`gh api repos/petarnikolov1/BaharFoods/commits/<sha>/check-runs`) should succeed, and WebFetch of the live
-   site should show the change.
+4. **Check it:** before pushing, write today's date and a few words about the change into `public/version.txt`.
+   After the push, `git ls-remote origin main` must equal `git rev-parse HEAD`; then the Cloudflare check run on the
+   commit (`gh api repos/petarnikolov1/BaharFoods/commits/<sha>/check-runs`) should succeed, and WebFetch of
+   `<live address>/version.txt` should show the new line (WebFetch drops scripts, so the page itself can't prove it).
 5. **Report** in one or two lines with the commit link `https://github.com/petarnikolov1/BaharFoods/commit/<sha>`.
 
 ## Never
